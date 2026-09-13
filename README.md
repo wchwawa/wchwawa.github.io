@@ -8,7 +8,7 @@ A bilingual personal website for Jason (Changhao) Wang, built with Astro and pla
 
 ## Develop
 
-Use Node.js 24 or newer.
+Use Node.js 24 or newer. When changing dependencies, use npm 11.19 or newer so the lockfile includes the optional native-build dependency graph on both macOS and Linux.
 
 ```sh
 npm ci
