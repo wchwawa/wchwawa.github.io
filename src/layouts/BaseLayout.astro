@@ -1,0 +1,114 @@
+---
+import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import serifFont from '@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2?url';
+import { copy, profile, routes, type Locale } from '../data/profile';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  notFound?: boolean;
+}
+
+const { locale, notFound = false } = Astro.props;
+const t = copy[locale];
+const alternateLocale = locale === 'en' ? 'zh' : 'en';
+const canonical = new URL(routes[locale], profile.site).href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.fullName,
+  alternateName: profile.name,
+  url: profile.site,
+  image: new URL(profile.portrait, profile.site).href,
+  jobTitle: 'Software Engineer',
+  email: `mailto:${profile.email}`,
+  homeLocation: { '@type': 'Place', name: 'Sydney, Australia' },
+  sameAs: [profile.github, profile.linkedin],
+  knowsAbout: ['Distributed systems', 'Agent infrastructure', 'Applied AI', 'Open-source software'],
+};
+---
+<!doctype html>
+<html lang={locale === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{notFound ? `404 | ${profile.name}` : t.title}</title>
+    <meta name="description" content={t.description} />
+    <meta name="author" content={profile.fullName} />
+    <meta name="theme-color" content="#faf9f4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={interFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifFont} as="font" type="font/woff2" crossorigin />
+    {notFound ? <meta name="robots" content="noindex" /> : (
+      <>
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hreflang="en" href={`${profile.site}/`} />
+        <link rel="alternate" hreflang="zh-CN" href={`${profile.site}/zh/`} />
+        <link rel="alternate" hreflang="x-default" href={`${profile.site}/`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={t.title} />
+        <meta property="og:description" content={t.description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:image" content={new URL(profile.portrait, profile.site).href} />
+        <meta property="og:image:alt" content={t.portraitAlt} />
+        <meta property="og:image:width" content="256" />
+        <meta property="og:image:height" content="256" />
+        <meta property="og:locale" content={locale === 'en' ? 'en_AU' : 'zh_CN'} />
+        <meta property="og:locale:alternate" content={locale === 'en' ? 'zh_CN' : 'en_AU'} />
+        <meta name="twitter:card" content="summary" />
+        <link rel="sitemap" href="/sitemap.xml" />
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(person).replace(/</g, '\\u003c')} />
+      </>
+    )}
+    <script is:inline>
+      // Apply a saved choice before paint. Light is the default, even on a dark OS.
+      try {
+        if (localStorage.getItem('jason-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark';
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#07090f');
+        }
+      } catch { /* Reading the page must not depend on browser storage. */ }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skip}</a>
+    <header class="site-header shell">
+      <a class="wordmark" href={routes[locale]} aria-label={t.home}>{profile.name}<span aria-hidden="true">.</span></a>
+      <nav aria-label={t.navigation} class="primary-nav">
+        <a href={`${routes[locale]}#work`}>{t.projects}</a>
+        <a href={`${routes[locale]}#about`}>{t.about}</a>
+        <a href={`${routes[locale]}#writing`}>{t.writing}</a>
+      </nav>
+      <div class="header-tools">
+        <a class="language-link" href={routes[alternateLocale]} lang={t.languageCode} hreflang={t.languageCode} data-language-switch>{t.language}</a>
+        <button class="theme-toggle" type="button" aria-label={t.theme} aria-pressed="false" hidden data-theme-toggle>
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.2 14.1A8.5 8.5 0 0 1 9.9 3.8a8.5 8.5 0 1 0 10.3 10.3Z" /></svg>
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+        </button>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer shell">
+      <p>{t.footer}</p>
+      <a href={profile.repository}>{t.source}<span aria-hidden="true"> ↗</span></a>
+    </footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+      if (button) {
+        const sync = () => {
+          const dark = document.documentElement.dataset.theme === 'dark';
+          button.setAttribute('aria-pressed', String(dark));
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#07090f' : '#faf9f4');
+        };
+        sync();
+        button.hidden = false;
+        button.addEventListener('click', () => {
+          const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = theme;
+          try { localStorage.setItem('jason-theme', theme); } catch { /* The toggle still works in this tab. */ }
+          sync();
+        });
+      }
+    </script>
+  </body>
+</html>
