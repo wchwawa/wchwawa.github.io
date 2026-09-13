@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { copy } from '../data/profile';
+const t = copy.en;
+---
+<BaseLayout locale="en" notFound>
+  <main id="main" class="shell not-found" tabindex="-1">
+    <p class="eyebrow">404</p>
+    <h1>{t.notFound}</h1>
+    <p>{t.notFoundBody}</p>
+    <a class="button button-solid" href="/">{t.backHome}</a>
+  </main>
+</BaseLayout>
