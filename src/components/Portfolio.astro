@@ -13,48 +13,44 @@ const contacts = [
 ];
 ---
 <main id="main" class="shell" tabindex="-1">
-  <section id="about" class="hero" aria-labelledby="name">
-    <div class="hero-copy">
-      <p class="eyebrow">{t.location}</p>
+  <section id="hero" class="hero" aria-labelledby="name">
+    <div class="hero-identity">
       <h1 id="name">{profile.name}</h1>
-      <div class="biography">
-        {biography[locale].map(paragraph => <p>{paragraph.map(segment => segment.href ? <a href={segment.href}>{segment.text}</a> : segment.text)}</p>)}
-      </div>
-      <div class="hero-actions">
-        <a class="button button-solid" href="#contact">{t.contactAction}<span aria-hidden="true"> ↗</span></a>
-        <a class="button button-outline" href={profile.cv} download="Jason_Wang_CV.pdf" data-cv-link>{t.cvAction}<span aria-hidden="true"> ↓</span></a>
-      </div>
+      <p class="hero-role">{t.role}</p>
     </div>
     <figure class="portrait">
       <img src={profile.portrait} alt={t.portraitAlt} width="256" height="256" fetchpriority="high" />
-      <figcaption>{t.portraitCaption}</figcaption>
     </figure>
+    <div class="hero-actions">
+      <a class="button button-solid" href="#contact">{t.contactAction}<span aria-hidden="true"> ↗</span></a>
+      <a class="button button-outline" href={profile.cv} download="Jason_Wang_CV.pdf" data-cv-link>{t.cvAction}<span aria-hidden="true"> ↓</span></a>
+    </div>
+  </section>
+
+  <section id="about" class="section about-section" aria-labelledby="about-title">
+    <h2 id="about-title" class="section-heading">{t.about}</h2>
+    <div class="biography">
+      {biography[locale].map(paragraph => <p>{paragraph.map(segment => segment.href ? <a href={segment.href}>{segment.text}</a> : segment.text)}</p>)}
+    </div>
   </section>
 
   <section id="work" class="section work-section" aria-labelledby="work-title">
-    <div class="section-heading">
-      <h2 id="work-title">{t.projects}</h2>
-    </div>
+    <h2 id="work-title" class="section-heading">{t.projects}</h2>
     <div class="project-list">
-      {projects.map((project, index) => {
+      {projects.map(project => {
         const p = project.copy[locale];
         return (
           <article class="project" data-project={project.id} aria-labelledby={`project-${project.id}`}>
             <div class="project-identity">
-              <span class="project-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-              <div>
-                <h3 id={`project-${project.id}`}><a href={project.url}>{project.name}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
-                <p class="project-role">{p.role}</p>
-              </div>
+              <h3 id={`project-${project.id}`}><a href={project.url}>{project.name}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
+              <p class="project-role">{p.role}</p>
             </div>
             <div class="project-body">
-              <p class="project-focus">{p.focus}</p>
               <p class="project-description">{p.description}</p>
               <p class="project-outcome">
                 {p.outcome}
                 {project.recognitionLinks && <>{' '}{project.recognitionLinks.map((link, linkIndex) => <>{linkIndex > 0 && <span aria-hidden="true"> · </span>}<a href={link.url}>{link.name}</a></>)}</>}
               </p>
-              {p.note && <p class="project-note">{p.note}</p>}
             </div>
           </article>
         );
@@ -63,21 +59,14 @@ const contacts = [
   </section>
 
   <section id="writing" class="section writing-section" aria-labelledby="writing-title">
-    <div class="section-heading">
-      <h2 id="writing-title">{t.writing}</h2>
-      <p>{t.writingDescription}</p>
-    </div>
+    <h2 id="writing-title" class="section-heading">{t.writing}</h2>
     <div class="writing-list">
       {articles.map(article => {
         const a = article.copy[locale];
         return (
           <article class="writing-entry">
             <time datetime={article.published}>{a.date}</time>
-            <div>
-              <h3><a href={article.url}>{a.title}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
-              <p>{a.description}</p>
-              <span class="article-destination">{t.readArticle}</span>
-            </div>
+            <h3><a href={article.url}>{a.title}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
           </article>
         );
       })}
@@ -85,9 +74,7 @@ const contacts = [
   </section>
 
   <section id="contact" class="section contact-section" aria-labelledby="contact-title">
-    <p class="eyebrow">{t.contact}</p>
-    <h2 id="contact-title">{t.contactTitle}</h2>
-    <p class="contact-description">{t.contactBody}</p>
+    <h2 id="contact-title" class="section-heading">{t.contact}</h2>
     <div class="contact-links">
       {contacts.map(contact => (
         <a class="contact-icon" href={contact.href} aria-label={contact.label} title={contact.label}>

@@ -8,7 +8,7 @@ const pages = [
   { file: 'dist/zh/index.html', lang: 'zh-CN', path: '/zh/' },
 ];
 
-test('the complete linked biography leads each page and replaces the old About content', () => {
+test('the complete linked biography follows the compact hero on each page', () => {
   const expectedLinks = [
     'https://landscape.lfai.foundation/?group=projects-and-products&item=data--store-format--nokv',
     'https://landscape.cncf.io/?group=projects-and-products&item=runtime--cloud-native-storage--nokv',
@@ -33,7 +33,7 @@ test('the complete linked biography leads each page and replaces the old About c
         if (segment.href) assert.ok(intro.includes(`href="${segment.href.replaceAll('&', '&amp;')}"`));
       }
     }
-    assert.deepEqual([...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m => m[1]), ['about', 'work', 'writing', 'contact']);
+    assert.deepEqual([...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m => m[1]), ['hero', 'about', 'work', 'writing', 'contact']);
     assert.ok(!/hero-summary|about-story|class="teaching"|class="principle"|cv-note|Five projects, from infrastructure to applications\.|五个项目，从底层系统到实际应用。|English · PDF|英文 · PDF|Built for reading\. Hosted on GitHub Pages\.|为阅读而设计 · 托管于 GitHub Pages/.test(html));
   }
   const englishText = biography.en.map(paragraph => paragraph.map(segment => segment.text).join(''));
@@ -43,6 +43,24 @@ test('the complete linked biography leads each page and replaces the old About c
   assert.ok(englishText[3].includes('Genesis Accelerator, Cohort 36, in late 2025.'));
   assert.ok(englishText[4].includes('turn their needs into useful, reliable agent systems.'));
   assert.equal(englishText[5], 'Fun fact: I was a journalist back in 2019.');
+});
+
+test('sections retain essential content without captions or explanatory subtitles', () => {
+  for (const { file } of pages) {
+    const html = readFileSync(file, 'utf8');
+    const hero = html.match(/<section id="hero"[^>]*>(.*?)<\/section>/s)?.[1];
+    assert.ok(hero);
+    assert.ok(hero.includes('data-cv-link'));
+    assert.ok(!hero.includes('class="biography"'));
+    assert.ok(!/<figcaption|project-focus|project-number|project-note|article-destination|contact-description/.test(html));
+    assert.ok(!/Notes from building NoKV|Let’s build something useful\.|durable checkpoints, ownership fencing and safe recovery/.test(html));
+    for (const section of ['about', 'work', 'writing', 'contact']) {
+      assert.ok(html.includes(`id="${section}-title" class="section-heading"`));
+    }
+    const nokv = html.match(/<article[^>]+data-project="nokv"[^>]*>(.*?)<\/article>/s)?.[1];
+    assert.ok(nokv && /engineering|工程实现/.test(nokv));
+    assert.ok(/Listed in|已收录于/.test(nokv));
+  }
 });
 
 test('contact links use labelled icons instead of visible addresses or platform names', () => {

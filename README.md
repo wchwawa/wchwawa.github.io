@@ -29,13 +29,13 @@ The mobile Lighthouse audit targets performance of at least 95 and accessibility
 
 ## Maintain content
 
-`src/data/profile.ts` is the source of truth for personal details, ordered projects, project links, shared facts and the two sets of copy. Both routes render the same components. English and Chinese are written naturally rather than translated word for word. The complete, six-paragraph biography leads the homepage at `#about`; it replaces the former introductory summary, About section and teaching sidebar. Its nine links use structured text segments, not raw HTML.
+`src/data/profile.ts` is the source of truth for personal details, ordered projects, project links, shared facts and the two sets of copy. Both routes render the same components. English and Chinese are written naturally rather than translated word for word. A compact hero contains the name, role, portrait and primary links. The complete, six-paragraph biography follows immediately in its own `#about` section, before the five projects. Its nine links use structured text segments, not raw HTML.
 
 The five project entries are intentionally limited to NoKV, Neuono, PicSEO AI, LoopX and EchoJournal. Other CV items should not be silently added as project entries.
 
 Content was checked against the owner's current CV and public project sources on 13 September 2026. The NoKV Landscape links are directory listings, not endorsements. Neuono's showcase is NYFW 25SS; the founding role was a contract. PicSEO's first-month metrics and EchoJournal's Genesis cohort are owner-provided CV facts. LoopX's 5.8K stars is a rounded, dated snapshot of 5,816 stars, not a live counter. Refresh the number and verification date together if updating it.
 
-Only two articles authored by Jason are linked, at their original NoKV URLs. The older interface article is described as historical research, not a benchmark of the current release.
+Only two articles authored by Jason are linked, at their original NoKV URLs, with their titles and publication dates. The older interface article is historical research, not a benchmark of the current release.
 
 The homepage biography was supplied by the owner on 15 September 2026, with only minor English grammar corrections and a corresponding Chinese version. Its collaboration descriptions and rounded star counts are owner-provided snapshots, not live counters. Keep every paragraph and hyperlink when adjusting its presentation.
 
@@ -44,6 +44,8 @@ The English CV is a verbatim copy in `public/cv/Jason_Wang_CV.pdf`. Both languag
 ## Design and behaviour
 
 The warm paper palette, Source Serif 4 headings, Inter body and restrained blue links follow NoKV's visual language. The two Latin variable fonts are self-hosted from the Fontsource packages; Chinese uses local system fallbacks. Core content and navigation work without JavaScript. Light is the default theme; the optional theme control saves a manual choice and applies it before paint. It also works when browser storage is unavailable.
+
+Keep section headings functional and omit explanatory subtitles, portrait captions and decorative project numbers. Project entries retain their role, description and outcome, with the star-count date inline. The NoKV contribution is summarised as engineering, downstream use-case discovery and open-source collaboration; do not reintroduce implementation-detail lists. The hero's actions stay in the first viewport, including on mobile, while the biography remains a readable text column.
 
 Font copyright notices and SIL Open Font Licenses are included in `public/fonts/licenses/`.
 
