@@ -49,7 +49,9 @@ Keep section headings functional and omit explanatory subtitles, portrait captio
 
 Font copyright notices and SIL Open Font Licenses are included in `public/fonts/licenses/`.
 
-Email, GitHub, LinkedIn and X contact links use build-time Tabler SVG icons. They have localised accessible names, hover hints, visible keyboard focus and 48px targets; no icon font, external service or client-side JavaScript is required. The Tabler MIT notice is included in `public/icons/LICENSE.txt`.
+Email, GitHub, LinkedIn, X and WeChat use build-time Tabler SVG icons with localised accessible names, hover hints, visible keyboard focus and 48px targets. The Tabler MIT notice is included in `public/icons/LICENSE.txt`.
+
+The WeChat icon opens a native modal dialog with the owner's original, unmodified QR image. It supports Escape, a close button, backdrop dismissal and native focus containment/restoration. The image stays white in both themes; a compact landscape layout keeps it visible on short screens. The full-size image link supports saving from a phone, and the icon links directly to that image when JavaScript or native dialogs are unavailable. No external service or additional dependency is needed. Browser tests cover both languages and themes, mobile portrait/landscape, keyboard operation and the no-JavaScript fallback.
 
 ## Deployment
 

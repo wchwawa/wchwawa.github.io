@@ -3,6 +3,7 @@ import mailIcon from '@tabler/icons/outline/mail.svg?raw';
 import githubIcon from '@tabler/icons/outline/brand-github.svg?raw';
 import linkedinIcon from '@tabler/icons/outline/brand-linkedin.svg?raw';
 import xIcon from '@tabler/icons/outline/brand-x.svg?raw';
+import WeChatContact from './WeChatContact.astro';
 import { articles, biography, copy, profile, projects, type Locale } from '../data/profile';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -83,6 +84,7 @@ const contacts = [
           <span aria-hidden="true" set:html={contact.icon} />
         </a>
       ))}
+      <WeChatContact locale={locale} />
     </div>
   </section>
 </main>
