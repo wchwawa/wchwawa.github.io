@@ -1,21 +1,28 @@
 ---
-import { articles, copy, profile, projects, type Locale } from '../data/profile';
+import mailIcon from '@tabler/icons/outline/mail.svg?raw';
+import githubIcon from '@tabler/icons/outline/brand-github.svg?raw';
+import linkedinIcon from '@tabler/icons/outline/brand-linkedin.svg?raw';
+import { articles, biography, copy, profile, projects, type Locale } from '../data/profile';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const t = copy[locale];
+const contacts = [
+  { href: `mailto:${profile.email}`, label: t.emailContact, icon: mailIcon },
+  { href: profile.github, label: t.githubContact, icon: githubIcon },
+  { href: profile.linkedin, label: t.linkedinContact, icon: linkedinIcon },
+];
 ---
 <main id="main" class="shell" tabindex="-1">
-  <section class="hero" aria-labelledby="name">
+  <section id="about" class="hero" aria-labelledby="name">
     <div class="hero-copy">
       <p class="eyebrow">{t.location}</p>
       <h1 id="name">{profile.name}</h1>
-      <p class="profession">{t.profession}</p>
-      <p class="hero-introduction">{t.introduction}</p>
-      <p class="hero-summary">{t.summary}</p>
+      <div class="biography">
+        {biography[locale].map(paragraph => <p>{paragraph.map(segment => segment.href ? <a href={segment.href}>{segment.text}</a> : segment.text)}</p>)}
+      </div>
       <div class="hero-actions">
         <a class="button button-solid" href="#contact">{t.contactAction}<span aria-hidden="true"> ↗</span></a>
         <a class="button button-outline" href={profile.cv} download="Jason_Wang_CV.pdf" data-cv-link>{t.cvAction}<span aria-hidden="true"> ↓</span></a>
-        <span class="cv-note">{t.cvNote}</span>
       </div>
     </div>
     <figure class="portrait">
@@ -27,7 +34,6 @@ const t = copy[locale];
   <section id="work" class="section work-section" aria-labelledby="work-title">
     <div class="section-heading">
       <h2 id="work-title">{t.projects}</h2>
-      <p>{t.projectCount}</p>
     </div>
     <div class="project-list">
       {projects.map((project, index) => {
@@ -56,20 +62,6 @@ const t = copy[locale];
     </div>
   </section>
 
-  <section id="about" class="section about-section" aria-labelledby="about-title">
-    <p class="eyebrow">{t.about}</p>
-    <h2 id="about-title">{t.aboutTitle}</h2>
-    <div class="about-grid">
-      <div class="about-story">{t.aboutParagraphs.map(paragraph => <p>{paragraph}</p>)}</div>
-      <aside class="teaching" aria-labelledby="teaching-title">
-        <p class="eyebrow">{t.teachingLabel}</p>
-        <h3 id="teaching-title">{t.teachingTitle}</h3>
-        <p>{t.teachingBody}</p>
-      </aside>
-    </div>
-    <p class="principle">{t.principle}</p>
-  </section>
-
   <section id="writing" class="section writing-section" aria-labelledby="writing-title">
     <div class="section-heading">
       <h2 id="writing-title">{t.writing}</h2>
@@ -96,10 +88,12 @@ const t = copy[locale];
     <p class="eyebrow">{t.contact}</p>
     <h2 id="contact-title">{t.contactTitle}</h2>
     <p class="contact-description">{t.contactBody}</p>
-    <a class="contact-email" href={`mailto:${profile.email}`}>{profile.email}<span aria-hidden="true"> ↗</span></a>
-    <div class="social-links">
-      <a href={profile.github}>GitHub<span aria-hidden="true"> ↗</span></a>
-      <a href={profile.linkedin}>LinkedIn<span aria-hidden="true"> ↗</span></a>
+    <div class="contact-links">
+      {contacts.map(contact => (
+        <a class="contact-icon" href={contact.href} aria-label={contact.label} title={contact.label}>
+          <span aria-hidden="true" set:html={contact.icon} />
+        </a>
+      ))}
     </div>
   </section>
 </main>
