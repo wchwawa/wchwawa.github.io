@@ -49,7 +49,7 @@ Keep section headings functional and omit explanatory subtitles, portrait captio
 
 Font copyright notices and SIL Open Font Licenses are included in `public/fonts/licenses/`.
 
-Email, GitHub and LinkedIn contact links use build-time Tabler SVG icons. They have localised accessible names, hover hints, visible keyboard focus and 48px targets; no icon font, external service or client-side JavaScript is required. The Tabler MIT notice is included in `public/icons/LICENSE.txt`.
+Email, GitHub, LinkedIn and X contact links use build-time Tabler SVG icons. They have localised accessible names, hover hints, visible keyboard focus and 48px targets; no icon font, external service or client-side JavaScript is required. The Tabler MIT notice is included in `public/icons/LICENSE.txt`.
 
 ## Deployment
 

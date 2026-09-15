@@ -67,9 +67,9 @@ test('contact links use labelled icons instead of visible addresses or platform 
   for (const { file } of pages) {
     const html = readFileSync(file, 'utf8');
     const contacts = [...html.matchAll(/<a class="contact-icon"([^>]*)>(.*?)<\/a>/gs)];
-    assert.equal(contacts.length, 3);
+    assert.equal(contacts.length, 4);
     contacts.forEach(([_, attributes, content], index) => {
-      assert.ok(attributes.includes(`href="${[`mailto:${profile.email}`, profile.github, profile.linkedin][index]}"`));
+      assert.ok(attributes.includes(`href="${[`mailto:${profile.email}`, profile.github, profile.linkedin, profile.x][index]}"`));
       assert.match(attributes, /aria-label="[^"]+"/);
       assert.match(attributes, /title="[^"]+"/);
       assert.match(content, /aria-hidden="true"/);
@@ -105,7 +105,7 @@ test('each page has its own metadata, alternates and a Person identity', () => {
     const person = JSON.parse(json);
     assert.equal(person['@type'], 'Person');
     assert.equal(person.name, profile.fullName);
-    assert.deepEqual(person.sameAs, [profile.github, profile.linkedin]);
+    assert.deepEqual(person.sameAs, [profile.github, profile.linkedin, profile.x]);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.ok(html.includes(`mailto:${profile.email}`));
   }

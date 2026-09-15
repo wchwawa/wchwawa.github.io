@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir } from 'node:fs/promises';
-import { biography, profile, projects } from '../../src/data/profile';
+import { biography, copy, profile, projects } from '../../src/data/profile';
 
 async function checkReflow(page: Page) {
   const issues = await page.evaluate(() => {
@@ -29,6 +29,7 @@ for (const locale of ['en', 'zh'] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator('[data-project]')).toHaveCount(5);
         await expect(page.locator('h1')).toHaveText(profile.name);
+        await expect(page.locator('.hero-role')).toHaveText(copy[locale].role);
         await expect(page.locator('main > section').first()).toHaveAttribute('id', 'hero');
         await expect(page.locator('#hero + section')).toHaveAttribute('id', 'about');
         await expect(page.locator('#hero [data-cv-link]')).toBeInViewport();
@@ -37,7 +38,8 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(page.locator('#contact p, .writing-entry p, .project-focus, .project-note')).toHaveCount(0);
         await expect(page.locator('.biography > p')).toHaveText(biography[locale].map(paragraph => paragraph.map(segment => segment.text).join('')));
         const icons = page.locator('.contact-icon');
-        await expect(icons).toHaveCount(3);
+        await expect(icons).toHaveCount(4);
+        await expect(page.locator('#contact a[aria-label$="X"]')).toHaveAttribute('href', profile.x);
         for (const icon of await icons.all()) {
           await expect(icon).toHaveAccessibleName(/.+/);
           await expect(icon).toHaveText('');
