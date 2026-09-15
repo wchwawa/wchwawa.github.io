@@ -38,7 +38,7 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(page.locator('#contact p, .writing-entry p, .project-focus, .project-note')).toHaveCount(0);
         await expect(page.locator('.biography > p')).toHaveText(biography[locale].map(paragraph => paragraph.map(segment => segment.text).join('')));
         const icons = page.locator('.contact-icon');
-        await expect(icons).toHaveCount(4);
+        await expect(icons).toHaveCount(5);
         await expect(page.locator('#contact a[aria-label$="X"]')).toHaveAttribute('href', profile.x);
         for (const icon of await icons.all()) {
           await expect(icon).toHaveAccessibleName(/.+/);
@@ -80,8 +80,67 @@ for (const locale of ['en', 'zh'] as const) {
     await expect(page).toHaveURL(/#work$/);
     await page.locator('[data-language-switch]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', locale === 'en' ? 'zh-CN' : 'en');
+    await page.locator('[data-wechat-open]').click();
+    await expect(page).toHaveURL(`http://127.0.0.1:4327${profile.wechatQr}`);
     await context.close();
   });
+
+  for (const viewport of [{ width: 360, height: 640 }, { width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 1000 }]) {
+    test(`${locale}, ${viewport.width}px: WeChat dialog fits and supports keyboard dismissal`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(route);
+      const trigger = page.locator('[data-wechat-open]');
+      const dialog = page.getByRole('dialog', { name: copy[locale].wechatTitle });
+      await expect(dialog).toBeHidden();
+      await expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+        await trigger.focus();
+        await page.keyboard.press('Space');
+        await expect(dialog).toBeVisible();
+        const close = dialog.getByRole('button', { name: copy[locale].wechatClose });
+        const original = dialog.getByRole('link', { name: copy[locale].wechatOpenImage });
+        await expect(close).toBeFocused();
+        const image = dialog.locator('img');
+        await expect.poll(() => image.evaluate(node => node instanceof HTMLImageElement && node.complete && node.naturalWidth)).toBe(888);
+        await expect.poll(() => image.evaluate(node => node instanceof HTMLImageElement && node.naturalHeight)).toBe(1191);
+        await expect(original).toHaveAttribute('href', profile.wechatQr);
+        await checkReflow(page);
+        for (const element of [dialog, image, close, original]) {
+          const bounds = await element.boundingBox();
+          expect(bounds!.y).toBeGreaterThanOrEqual(0);
+          expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
+        }
+        await page.keyboard.press('Tab');
+        await expect(original).toBeFocused();
+        await page.keyboard.press('Tab');
+        await expect(close).toBeFocused();
+        await page.keyboard.press('Shift+Tab');
+        await expect(original).toBeFocused();
+        const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+        expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+        if (!process.env.CI) {
+          await mkdir('qa', { recursive: true });
+          await page.screenshot({ path: `qa/${locale}-${viewport.width}-${theme}-wechat.png` });
+        }
+        await page.keyboard.press('Escape');
+        await expect(dialog).toBeHidden();
+        await expect(trigger).toBeFocused();
+        await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+      }
+      await trigger.click();
+      await dialog.locator('img').click();
+      await expect(dialog).toBeVisible();
+      await dialog.getByRole('button', { name: copy[locale].wechatClose }).click();
+      await expect(dialog).toBeHidden();
+      await expect(trigger).toBeFocused();
+      await trigger.press('Enter');
+      await expect(dialog).toBeVisible();
+      await page.mouse.click(2, 2);
+      await expect(dialog).toBeHidden();
+      await expect(trigger).toBeFocused();
+    });
+  }
 
   test(`${locale}: 200% browser-zoom equivalent reflow`, async ({ browser }) => {
     // At 200% zoom a 1440 x 900 display has a 720 x 450 CSS viewport.

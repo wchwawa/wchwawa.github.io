@@ -67,9 +67,9 @@ test('contact links use labelled icons instead of visible addresses or platform 
   for (const { file } of pages) {
     const html = readFileSync(file, 'utf8');
     const contacts = [...html.matchAll(/<a class="contact-icon"([^>]*)>(.*?)<\/a>/gs)];
-    assert.equal(contacts.length, 4);
+    assert.equal(contacts.length, 5);
     contacts.forEach(([_, attributes, content], index) => {
-      assert.ok(attributes.includes(`href="${[`mailto:${profile.email}`, profile.github, profile.linkedin, profile.x][index]}"`));
+      assert.ok(attributes.includes(`href="${[`mailto:${profile.email}`, profile.github, profile.linkedin, profile.x, profile.wechatQr][index]}"`));
       assert.match(attributes, /aria-label="[^"]+"/);
       assert.match(attributes, /title="[^"]+"/);
       assert.match(content, /aria-hidden="true"/);
@@ -77,6 +77,18 @@ test('contact links use labelled icons instead of visible addresses or platform 
       assert.equal(content.replace(/<[^>]*>/g, '').trim(), '');
     });
   }
+});
+
+test('WeChat keeps a native dialog and a direct original-image fallback in both languages', () => {
+  for (const { file } of pages) {
+    const html = readFileSync(file, 'utf8');
+    assert.match(html, /<dialog\b[^>]*id="wechat-dialog"[^>]*aria-labelledby="wechat-title"/);
+    assert.match(html, /<form\b[^>]*method="dialog"/);
+    assert.match(html, /<img\b[^>]*src="\/images\/wechat-qr.jpg"[^>]*width="888"[^>]*height="1191"/);
+  }
+  const original = readFileSync(`public${profile.wechatQr}`);
+  assert.equal(original.subarray(0, 3).toString('hex'), 'ffd8ff');
+  assert.deepEqual(readFileSync(`dist${profile.wechatQr}`), original);
 });
 
 test('the same five projects and shared facts are used in both languages', () => {
