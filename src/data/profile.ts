@@ -25,19 +25,14 @@ export const copy = {
     language: '中文版',
     languageCode: 'zh',
     theme: 'Dark theme',
-    location: 'Sydney, Australia',
+    role: 'Applied AI Engineer',
     contactAction: 'Get in touch',
     cvAction: 'Download CV',
     portraitAlt: 'Jason Wang smiling and giving a thumbs-up',
-    portraitCaption: 'Changhao (Jason) Wang',
     projects: 'Selected work',
     about: 'About me',
     writing: 'Writing',
-    writingDescription: 'Notes from building NoKV, published on the project website.',
-    readArticle: 'Read on NoKV',
     contact: 'Contact',
-    contactTitle: 'Let’s build something useful.',
-    contactBody: 'If you’re working on agent infrastructure, a practical AI application or an open-source project, I’d be glad to compare notes.',
     emailContact: 'Email Jason',
     githubContact: 'Jason on GitHub',
     linkedinContact: 'Jason on LinkedIn',
@@ -55,19 +50,14 @@ export const copy = {
     language: 'English',
     languageCode: 'en',
     theme: '深色主题',
-    location: '澳大利亚 · 悉尼',
+    role: '应用 AI 工程师',
     contactAction: '联系我',
     cvAction: '下载英文 CV',
     portraitAlt: 'Jason Wang 微笑着竖起拇指',
-    portraitCaption: 'Changhao（Jason）Wang',
     projects: '精选项目',
     about: '关于我',
     writing: '技术文章',
-    writingDescription: '来自 NoKV 实践的思考，直接链接项目官网原文。',
-    readArticle: '阅读 NoKV 原文（英文）',
     contact: '联系',
-    contactTitle: '一起做些真正有用的东西。',
-    contactBody: '如果你在做 Agent 基础设施、解决实际问题的 AI 应用，或有意思的开源项目，欢迎交流。',
     emailContact: '给 Jason 发邮件',
     githubContact: 'Jason 的 GitHub',
     linkedinContact: 'Jason 的 LinkedIn',
@@ -181,10 +171,8 @@ export const facts = {
 
 type ProjectCopy = {
   role: string;
-  focus: string;
   description: string;
   outcome: string;
-  note?: string;
 };
 
 type Project = {
@@ -208,17 +196,13 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Co-founder',
-        focus: 'A durable workspace for agents.',
-        description: 'Co-built an agent-native filesystem and versioned state layer so workspaces can outlive their sandboxes. My work spans durable checkpoints, ownership fencing and safe recovery, alongside finding downstream use cases and building open-source collaborations.',
+        description: 'Co-built an agent-native filesystem and versioned state layer so workspaces can outlive their sandboxes. My work spans engineering, downstream use-case discovery and open-source collaboration.',
         outcome: 'Listed in',
-        note: 'Landscape entries are directory listings, not foundation endorsements.',
       },
       zh: {
         role: '联合创始人',
-        focus: '让 Agent 的工作区独立于沙箱，持久保留。',
-        description: '共同构建面向 Agent 的文件系统形态工作区与版本化状态层。我负责的工作涵盖持久化检查点、执行权隔离与故障恢复，也包括寻找真实的下游需求、推进开源合作与集成验证。',
+        description: '共同构建面向 Agent 的文件系统形态工作区与版本化状态层，让工作区独立于沙箱持久保留。我负责工程实现、下游需求探索与开源合作。',
         outcome: '已收录于',
-        note: 'Landscape 为项目目录，收录不代表基金会官方背书。',
       },
     },
   },
@@ -229,14 +213,12 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Founding Engineer · Contract',
-        focus: 'A fashion agent harness, from design to order.',
-        description: 'Built the data and retrieval architecture, including the production-database-to-Graph-RAG ETL pipeline and graph design. Used authoritative garment metadata and images to constrain personalised product previews and connect design to ordering.',
+        description: 'Built the data and retrieval architecture for a fashion agent harness, including the production-database-to-Graph-RAG ETL pipeline and graph design. Used authoritative garment metadata and images to constrain personalised product previews and connect design to ordering.',
         outcome: `Showcased at ${facts.neuonoShowcase}.`,
       },
       zh: {
         role: '创始工程师 · 合同制',
-        focus: '连接服装设计与下单的 Agent 应用。',
-        description: '负责数据与检索架构，将生产数据库中的服装元数据和图像接入 Graph RAG，完成 ETL 管道与图谱设计。依据业务数据库中的权威数据约束个性化生成的产品预渲染图，打通设计到下单的流程。',
+        description: '为服装设计 Agent 应用构建数据与检索架构，将生产数据库中的服装元数据和图像接入 Graph RAG，完成 ETL 管道与图谱设计。依据业务数据库中的权威数据约束个性化生成的产品预渲染图，打通设计到下单的流程。',
         outcome: `亮相纽约时装周（${facts.neuonoShowcase}）。`,
       },
     },
@@ -248,13 +230,11 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Full-stack Engineer · Contract',
-        focus: 'Image management and sharing for photographers.',
         description: 'Independently shipped v1.0 of a photographer-focused image management and sharing product. Owned the application flow from uploads and storage through shareable galleries and billing.',
         outcome: `${facts.picseo.dailyActiveUsers} daily active users and ${facts.picseo.payingUsers} paying users in the first month.`,
       },
       zh: {
         role: '全栈工程师 · 合同制',
-        focus: '面向摄影师的图片管理与分享系统。',
         description: '独立交付 v1.0，负责从图片上传、存储到图库分享和计费的完整应用流程，让摄影师更方便地管理作品并交付给客户。',
         outcome: `首月获得 ${facts.picseo.dailyActiveUsers} 日活跃用户、${facts.picseo.payingUsers} 付费用户。`,
       },
@@ -267,17 +247,13 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Collaborator',
-        focus: 'A harness for long-running agent tasks.',
         description: 'Contributed shared-goal state and execution-ownership semantics to a long-task agent harness. The work makes authority explicit: who may act and publish results, and how state stays consistent across retries, reassignment and recovery.',
-        outcome: `${facts.loopx.displayStars} GitHub stars`,
-        note: `Checked ${facts.loopx.checkedOn}; a dated snapshot, not a live counter.`,
+        outcome: `${facts.loopx.displayStars} GitHub stars (as of ${facts.loopx.checkedOn}).`,
       },
       zh: {
         role: '协作者',
-        focus: '面向长任务的 Agent 执行框架。',
-        description: '参与共享目标状态与执行权机制的设计和实现，明确谁可以执行任务、谁有权提交结果，以及重试、任务转交和故障恢复时如何保持状态一致。',
-        outcome: `${facts.loopx.displayStars} GitHub stars`,
-        note: `核对日期：${facts.loopx.checkedOn}，非实时计数。`,
+        description: '为面向长任务的 Agent 执行框架设计和实现共享目标状态与执行权机制，明确谁可以执行任务、谁有权提交结果，以及重试、任务转交和故障恢复时如何保持状态一致。',
+        outcome: `${facts.loopx.displayStars} GitHub stars（截至 ${facts.loopx.checkedOn}）。`,
       },
     },
   },
@@ -288,13 +264,11 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Personal project',
-        focus: 'Personal memory, built around voice.',
-        description: 'Built a voice-native system that turns spoken entries into a searchable journal and structured reflections. Added real-time voice conversations grounded in the user’s own history, with explicit time-range retrieval.',
+        description: 'Built a voice-native personal memory system that turns spoken entries into a searchable journal and structured reflections. Added real-time voice conversations grounded in the user’s own history, with explicit time-range retrieval.',
         outcome: `University of Sydney Genesis Accelerator, cohort ${facts.echoJournalCohort}.`,
       },
       zh: {
         role: '个人项目',
-        focus: '以语音为入口的个人记忆系统。',
         description: '将语音记录整理为可检索的日记和结构化回顾，并支持基于个人历史数据的实时语音交流。通过明确的时间范围检索，让对话回到用户真正经历过的事情。',
         outcome: `入选悉尼大学 Genesis Accelerator 第 ${facts.echoJournalCohort} 期。`,
       },
@@ -309,12 +283,10 @@ export const articles = [
     copy: {
       en: {
         title: 'The Sandbox Can Disappear. The Workspace Can Stay.',
-        description: 'Why agent compute and durable workspace state need different lifecycles.',
         date: '31 Aug 2026',
       },
       zh: {
         title: '沙箱可以消失，工作区应当保留',
-        description: '为什么 Agent 的计算环境和持久化工作区，需要各自独立的生命周期。',
         date: '2026 年 8 月 31 日',
       },
     },
@@ -325,12 +297,10 @@ export const articles = [
     copy: {
       en: {
         title: 'Agents Want Filesystems',
-        description: 'An early interface study on filesystem-shaped tools and token efficiency. An archived experiment, not a current-release benchmark.',
         date: '13 Jun 2026',
       },
       zh: {
         title: 'Agent 为什么偏爱文件系统接口',
-        description: '一次关于文件系统形态工具与 token 效率的早期研究。文章记录历史实验，不代表当前版本的性能基准。',
         date: '2026 年 6 月 13 日',
       },
     },

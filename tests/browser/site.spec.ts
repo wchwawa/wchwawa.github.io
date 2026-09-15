@@ -29,7 +29,12 @@ for (const locale of ['en', 'zh'] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator('[data-project]')).toHaveCount(5);
         await expect(page.locator('h1')).toHaveText(profile.name);
-        await expect(page.locator('main > section').first()).toHaveAttribute('id', 'about');
+        await expect(page.locator('main > section').first()).toHaveAttribute('id', 'hero');
+        await expect(page.locator('#hero + section')).toHaveAttribute('id', 'about');
+        await expect(page.locator('#hero [data-cv-link]')).toBeInViewport();
+        await expect(page.locator('#about h2')).toHaveText(locale === 'en' ? 'About me' : '关于我');
+        await expect(page.locator('.portrait figcaption')).toHaveCount(0);
+        await expect(page.locator('#contact p, .writing-entry p, .project-focus, .project-note')).toHaveCount(0);
         await expect(page.locator('.biography > p')).toHaveText(biography[locale].map(paragraph => paragraph.map(segment => segment.text).join('')));
         const icons = page.locator('.contact-icon');
         await expect(icons).toHaveCount(3);
@@ -49,6 +54,10 @@ for (const locale of ['en', 'zh'] as const) {
           await mkdir('qa', { recursive: true });
           await page.screenshot({ path: `qa/${locale}-${width}-${theme}-top.png` });
           await page.screenshot({ path: `qa/${locale}-${width}-${theme}-full.png`, fullPage: true });
+          if (width === 390 || width === 1440) {
+            await page.locator('#work').screenshot({ path: `qa/${locale}-${width}-${theme}-work.png` });
+            await page.locator('#contact').screenshot({ path: `qa/${locale}-${width}-${theme}-contact.png` });
+          }
         }
       });
     }
@@ -63,6 +72,8 @@ for (const locale of ['en', 'zh'] as const) {
     await expect(page.locator('[data-cv-link]')).toHaveAttribute('href', profile.cv);
     await expect(page.locator('.biography > p')).toHaveCount(6);
     await expect(page.locator('.biography a')).toHaveCount(9);
+    await page.locator('.primary-nav a[href$="#about"]').click();
+    await expect(page).toHaveURL(/#about$/);
     await page.locator('.primary-nav a[href$="#work"]').click();
     await expect(page).toHaveURL(/#work$/);
     await page.locator('[data-language-switch]').click();
@@ -77,6 +88,7 @@ for (const locale of ['en', 'zh'] as const) {
     await page.goto(`http://127.0.0.1:4327${route}`);
     await checkReflow(page);
     await expect(page.locator('[data-cv-link]')).toBeVisible();
+    await expect(page.locator('[data-cv-link]')).toBeInViewport();
     await expect(page.locator('[data-project]')).toHaveCount(5);
     if (!process.env.CI) await page.screenshot({ path: `qa/${locale}-zoom-200.png`, fullPage: true });
     await context.close();
