@@ -2,6 +2,7 @@
 import mailIcon from '@tabler/icons/outline/mail.svg?raw';
 import githubIcon from '@tabler/icons/outline/brand-github.svg?raw';
 import linkedinIcon from '@tabler/icons/outline/brand-linkedin.svg?raw';
+import xIcon from '@tabler/icons/outline/brand-x.svg?raw';
 import { articles, biography, copy, profile, projects, type Locale } from '../data/profile';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
@@ -10,6 +11,7 @@ const contacts = [
   { href: `mailto:${profile.email}`, label: t.emailContact, icon: mailIcon },
   { href: profile.github, label: t.githubContact, icon: githubIcon },
   { href: profile.linkedin, label: t.linkedinContact, icon: linkedinIcon },
+  { href: profile.x, label: t.xContact, icon: xIcon },
 ];
 ---
 <main id="main" class="shell" tabindex="-1">
