@@ -20,7 +20,7 @@ const person = {
   alternateName: profile.name,
   url: profile.site,
   image: new URL(profile.portrait, profile.site).href,
-  jobTitle: 'Software Engineer',
+  jobTitle: 'Applied AI Engineer',
   email: `mailto:${profile.email}`,
   homeLocation: { '@type': 'Place', name: 'Sydney, Australia' },
   sameAs: [profile.github, profile.linkedin],
@@ -75,8 +75,8 @@ const person = {
     <header class="site-header shell">
       <a class="wordmark" href={routes[locale]} aria-label={t.home}>{profile.name}<span aria-hidden="true">.</span></a>
       <nav aria-label={t.navigation} class="primary-nav">
-        <a href={`${routes[locale]}#work`}>{t.projects}</a>
         <a href={`${routes[locale]}#about`}>{t.about}</a>
+        <a href={`${routes[locale]}#work`}>{t.projects}</a>
         <a href={`${routes[locale]}#writing`}>{t.writing}</a>
       </nav>
       <div class="header-tools">
@@ -89,7 +89,6 @@ const person = {
     </header>
     <slot />
     <footer class="site-footer shell">
-      <p>{t.footer}</p>
       <a href={profile.repository}>{t.source}<span aria-hidden="true"> ↗</span></a>
     </footer>
     <script>

@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir } from 'node:fs/promises';
-import { profile, projects } from '../../src/data/profile';
+import { biography, profile, projects } from '../../src/data/profile';
 
 async function checkReflow(page: Page) {
   const issues = await page.evaluate(() => {
@@ -29,6 +29,18 @@ for (const locale of ['en', 'zh'] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator('[data-project]')).toHaveCount(5);
         await expect(page.locator('h1')).toHaveText(profile.name);
+        await expect(page.locator('main > section').first()).toHaveAttribute('id', 'about');
+        await expect(page.locator('.biography > p')).toHaveText(biography[locale].map(paragraph => paragraph.map(segment => segment.text).join('')));
+        const icons = page.locator('.contact-icon');
+        await expect(icons).toHaveCount(3);
+        for (const icon of await icons.all()) {
+          await expect(icon).toHaveAccessibleName(/.+/);
+          await expect(icon).toHaveText('');
+          await expect(icon.locator('svg')).toBeVisible();
+          const bounds = await icon.boundingBox();
+          expect(bounds!.width).toBeGreaterThanOrEqual(44);
+          expect(bounds!.height).toBeGreaterThanOrEqual(44);
+        }
         await checkReflow(page);
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
         expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
@@ -49,7 +61,9 @@ for (const locale of ['en', 'zh'] as const) {
     await expect(page.locator('[data-project]')).toHaveCount(5);
     await expect(page.locator('[data-theme-toggle]')).toBeHidden();
     await expect(page.locator('[data-cv-link]')).toHaveAttribute('href', profile.cv);
-    await page.locator('.primary-nav a').first().click();
+    await expect(page.locator('.biography > p')).toHaveCount(6);
+    await expect(page.locator('.biography a')).toHaveCount(9);
+    await page.locator('.primary-nav a[href$="#work"]').click();
     await expect(page).toHaveURL(/#work$/);
     await page.locator('[data-language-switch]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', locale === 'en' ? 'zh-CN' : 'en');
@@ -99,6 +113,13 @@ test('language, keyboard focus, theme persistence and downloads', async ({ page 
   expect(download.suggestedFilename()).toBe('Jason_Wang_CV.pdf');
   expect(await download.failure()).toBeNull();
   await expect(page.locator(`a[href="mailto:${profile.email}"]`)).toBeVisible();
+  await page.locator('.contact-icon').first().focus();
+  await page.keyboard.press('Shift+Tab');
+  for (const icon of await page.locator('.contact-icon').all()) {
+    await page.keyboard.press('Tab');
+    await expect(icon).toBeFocused();
+    await expect(icon).toHaveCSS('outline-style', 'solid');
+  }
   for (const project of projects) {
     await expect(page.locator(`[data-project="${project.id}"] h3 a`)).toHaveAttribute('href', project.url);
   }

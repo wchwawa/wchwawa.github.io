@@ -1,12 +1,65 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
-import { profile, projects, articles, facts } from '../src/data/profile.ts';
+import { profile, projects, articles, biography, facts } from '../src/data/profile.ts';
 
 const pages = [
   { file: 'dist/index.html', lang: 'en', path: '/' },
   { file: 'dist/zh/index.html', lang: 'zh-CN', path: '/zh/' },
 ];
+
+test('the complete linked biography leads each page and replaces the old About content', () => {
+  const expectedLinks = [
+    'https://landscape.lfai.foundation/?group=projects-and-products&item=data--store-format--nokv',
+    'https://landscape.cncf.io/?group=projects-and-products&item=runtime--cloud-native-storage--nokv',
+    'https://dbdb.io/db/nokv',
+    'https://github.com/huangruiteng/loopx',
+    'https://github.com/volcengine/OpenViking',
+    'https://github.com/NousResearch/hermes-agent',
+    'https://neuono.com/',
+    'https://www.forbes.com.au/covers/entrepreneurs/from-aussie-suits-to-ai-couture-the-startup-trying-to-reinvent-fashion-in-five-days/',
+    'https://designobserver.com/your-tailormade-revenge-dress-theres-an-app-for-that/',
+  ];
+  for (const { file, lang } of pages) {
+    const locale = lang === 'en' ? 'en' : 'zh';
+    const html = readFileSync(file, 'utf8');
+    const intro = html.match(/<section id="about"[^>]*>(.*?)<\/section>/s)?.[1];
+    assert.ok(intro);
+    assert.equal(biography[locale].length, 6);
+    assert.deepEqual(biography[locale].flat().filter(segment => segment.href).map(segment => segment.href), expectedLinks);
+    for (const paragraph of biography[locale]) {
+      for (const segment of paragraph) {
+        assert.ok(intro.includes(segment.text.replaceAll('&', '&amp;')), `Missing biography text: ${segment.text}`);
+        if (segment.href) assert.ok(intro.includes(`href="${segment.href.replaceAll('&', '&amp;')}"`));
+      }
+    }
+    assert.deepEqual([...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m => m[1]), ['about', 'work', 'writing', 'contact']);
+    assert.ok(!/hero-summary|about-story|class="teaching"|class="principle"|cv-note|Five projects, from infrastructure to applications\.|五个项目，从底层系统到实际应用。|English · PDF|英文 · PDF|Built for reading\. Hosted on GitHub Pages\.|为阅读而设计 · 托管于 GitHub Pages/.test(html));
+  }
+  const englishText = biography.en.map(paragraph => paragraph.map(segment => segment.text).join(''));
+  assert.ok(englishText[0].startsWith('Hi, I’m Jason Wang, a Sydney-based applied AI engineer'));
+  assert.ok(englishText[1].includes('5.8K+ GitHub stars') && englishText[1].includes('37K+ stars') && englishText[1].includes('245K+ stars'));
+  assert.ok(englishText[2].includes('At THDR Group, I implemented the core agent workflow'));
+  assert.ok(englishText[3].includes('Genesis Accelerator, Cohort 36, in late 2025.'));
+  assert.ok(englishText[4].includes('turn their needs into useful, reliable agent systems.'));
+  assert.equal(englishText[5], 'Fun fact: I was a journalist back in 2019.');
+});
+
+test('contact links use labelled icons instead of visible addresses or platform names', () => {
+  for (const { file } of pages) {
+    const html = readFileSync(file, 'utf8');
+    const contacts = [...html.matchAll(/<a class="contact-icon"([^>]*)>(.*?)<\/a>/gs)];
+    assert.equal(contacts.length, 3);
+    contacts.forEach(([_, attributes, content], index) => {
+      assert.ok(attributes.includes(`href="${[`mailto:${profile.email}`, profile.github, profile.linkedin][index]}"`));
+      assert.match(attributes, /aria-label="[^"]+"/);
+      assert.match(attributes, /title="[^"]+"/);
+      assert.match(content, /aria-hidden="true"/);
+      assert.match(content, /<svg\b/);
+      assert.equal(content.replace(/<[^>]*>/g, '').trim(), '');
+    });
+  }
+});
 
 test('the same five projects and shared facts are used in both languages', () => {
   assert.deepEqual(projects.map(p => p.name), ['NoKV', 'Neuono', 'PicSEO AI', 'LoopX', 'EchoJournal']);

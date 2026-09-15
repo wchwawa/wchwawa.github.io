@@ -127,16 +127,14 @@ main:focus { outline: none; }
 }
 .eyebrow { color: var(--muted); font-size: 0.75rem; font-weight: 550; letter-spacing: 0.1em; text-transform: uppercase; }
 .hero .eyebrow { margin-bottom: 18px; }
-.profession { margin-top: 17px; font-size: 1rem; color: var(--muted); }
-.hero-introduction { color: var(--ink); font-size: 1.4rem; font-weight: 480; line-height: 1.45; max-width: 33ch; margin-top: 30px; }
-.hero-summary { margin-top: 16px; max-width: 61ch; }
+.biography { margin-top: 30px; max-width: 65ch; }
+.biography p + p { margin-top: 24px; }
 .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 46px; padding: 0.55rem 1.25rem; border: 1px solid transparent; border-radius: 999px; font-size: 0.875rem; font-weight: 550; line-height: 1.5; text-decoration: none; }
 .button-solid { background: var(--solid); color: var(--solid-ink); }
 .button-solid:hover { background: var(--solid-hover); }
 .button-outline { border-color: var(--strong-line); color: var(--ink); }
 .button-outline:hover { background: var(--surface); border-color: var(--ink); }
-.cv-note { color: var(--muted); font-size: 0.75rem; }
 .portrait { padding-top: 47px; }
 .portrait img { width: 200px; height: 200px; border-radius: 14px; border: 1px solid var(--line); object-fit: cover; }
 .portrait figcaption { color: var(--muted); font-size: 0.7rem; margin-top: 12px; }
@@ -157,14 +155,6 @@ main:focus { outline: none; }
 .project-description { margin-top: 12px; max-width: 65ch; }
 .project-outcome { margin-top: 17px; font-size: 0.85rem; font-weight: 500; color: var(--ink); }
 .project-note { margin-top: 5px; font-size: 0.725rem; color: var(--muted); }
-.about-section > h2 { margin-top: 14px; max-width: 32ch; }
-.about-grid { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 70px; margin-top: 30px; }
-.about-story { max-width: 65ch; }
-.about-story p + p { margin-top: 20px; }
-.teaching { align-self: start; background: var(--surface); padding: 26px; border-radius: 12px; }
-.teaching h3 { margin-top: 12px; font-size: 1rem; }
-.teaching > p:last-child { margin-top: 12px; font-size: 0.875rem; line-height: 1.75; }
-.principle { margin-top: 34px; max-width: 65ch; padding-left: 20px; border-left: 2px solid var(--link); color: var(--ink); font-size: 1.05rem; }
 .writing-entry { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 44px; padding-block: 26px; border-top: 1px solid var(--line); }
 .writing-entry:last-child { padding-bottom: 0; }
 .writing-entry time { font-size: 0.8rem; color: var(--muted); padding-top: 3px; }
@@ -176,10 +166,11 @@ main:focus { outline: none; }
 .contact-section { padding-block: 54px 64px; }
 .contact-section h2 { margin-top: 14px; }
 .contact-description { margin-top: 22px; max-width: 59ch; }
-.contact-email { display: inline-block; margin-top: 26px; font-size: clamp(1rem, 2.1vw, 1.3rem); overflow-wrap: anywhere; }
-.social-links { display: flex; gap: 26px; margin-top: 20px; font-size: 0.875rem; }
-.social-links a { padding-block: 5px; }
-.site-footer { display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); padding-block: 24px 38px; font-size: 0.725rem; color: var(--muted); }
+.contact-links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 26px; }
+.contact-icon { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid var(--strong-line); border-radius: 50%; color: var(--link); text-decoration: none; }
+.contact-icon:hover { background: var(--surface); border-color: var(--link); }
+.contact-icon svg { width: 24px; height: 24px; }
+.site-footer { display: flex; justify-content: flex-end; border-top: 1px solid var(--line); padding-block: 24px 38px; font-size: 0.725rem; color: var(--muted); }
 .site-footer a { padding-block: 2px; }
 .not-found { padding-block: 100px 160px; }
 .not-found h1 { font-size: clamp(2.5rem, 6vw, 4rem); margin-top: 20px; }
@@ -187,8 +178,7 @@ main:focus { outline: none; }
 :lang(zh-CN) h1 { font-family: var(--serif); }
 :lang(zh-CN) h2 { letter-spacing: 0; font-size: clamp(1.8rem, 3vw, 2.35rem); line-height: 1.5; }
 :lang(zh-CN) p { text-wrap: wrap; }
-:lang(zh-CN) .hero-introduction { font-size: 1.4rem; }
-:lang(zh-CN) .hero-summary, :lang(zh-CN) .project-description, :lang(zh-CN) .about-story { line-height: 1.85; }
+:lang(zh-CN) .biography, :lang(zh-CN) .project-description { line-height: 1.85; }
 :lang(zh-CN) .project h3 { font-family: var(--serif); }
 :lang(zh-CN) .writing-entry h3 { line-height: 1.65; }
 
@@ -198,12 +188,9 @@ main:focus { outline: none; }
   .primary-nav { gap: 1.2rem; }
   .hero { grid-template-columns: minmax(0, 1fr) 160px; gap: 40px; padding-block: 65px 70px; }
   .portrait img { width: 160px; height: 160px; }
-  .hero-introduction { font-size: 1.25rem; }
-  .hero-summary { font-size: 1rem; }
   .project { grid-template-columns: 215px minmax(0, 1fr); gap: 30px; }
   .project-identity { gap: 14px; }
   .project h3 { font-size: 1.55rem; }
-  .about-grid { grid-template-columns: minmax(0, 1fr) 245px; gap: 32px; }
   .writing-entry { grid-template-columns: 140px minmax(0, 1fr); gap: 32px; }
 }
 
@@ -217,12 +204,9 @@ main:focus { outline: none; }
   .hero { position: relative; display: block; padding-block: 32px 52px; }
   .hero .eyebrow { max-width: calc(100% - 95px); min-height: 72px; display: flex; align-items: center; margin-bottom: 20px; font-size: 0.65rem; }
   .hero h1 { font-size: clamp(3.1rem, 14vw, 4.7rem); }
-  .profession { font-size: 0.8rem; margin-top: 14px; }
-  .hero-introduction { font-size: 1.3rem; margin-top: 25px; }
-  .hero-summary { font-size: 1.0625rem; margin-top: 14px; }
+  .biography { margin-top: 25px; }
   .hero-actions { gap: 10px; margin-top: 26px; }
   .button { font-size: 0.8rem; padding-inline: 1.1rem; }
-  .cv-note { flex-basis: 100%; font-size: 0.7rem; margin-left: 2px; }
   .portrait { padding: 0; position: absolute; right: 0; top: 32px; }
   .portrait img { width: 72px; height: 72px; border-radius: 8px; }
   .portrait figcaption { display: none; }
@@ -238,17 +222,12 @@ main:focus { outline: none; }
   .project-description { margin-top: 10px; }
   .project-outcome { font-size: 0.84rem; }
   .project-note { font-size: 0.72rem; }
-  .about-grid { display: block; margin-top: 22px; }
-  .teaching { margin-top: 26px; padding: 23px; }
-  .principle { font-size: 1rem; margin-top: 26px; }
   .writing-entry { display: block; padding-block: 24px; }
   .writing-entry h3 { margin-top: 10px; font-size: 1.35rem; }
   .writing-entry p { font-size: 1rem; }
   .contact-description { margin-top: 18px; }
-  .contact-email { margin-top: 22px; font-size: 1rem; }
-  .site-footer { display: block; padding-block: 22px 28px; }
-  .site-footer > a { display: inline-block; margin-top: 8px; min-height: 36px; }
-  :lang(zh-CN) .hero-introduction { font-size: 1.25rem; }
+  .site-footer { padding-block: 22px 28px; }
+  .site-footer > a { min-height: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
