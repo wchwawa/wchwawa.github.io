@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
+import astroConfig from '../astro.config.mjs';
 import { profile, projects, articles, biography, facts } from '../src/data/profile.ts';
 
 const pages = [
@@ -107,16 +108,23 @@ test('the same five projects and shared facts are used in both languages', () =>
 });
 
 test('each page has its own metadata, alternates and a Person identity', () => {
+  assert.equal(profile.site, 'https://jasonchwang.com');
+  assert.equal(astroConfig.site, profile.site);
   for (const { file, lang, path } of pages) {
     const html = readFileSync(file, 'utf8');
     assert.ok(html.includes(`<html lang="${lang}"`));
     assert.ok(html.includes(`rel="canonical" href="${profile.site}${path}"`));
+    assert.ok(html.includes(`property="og:url" content="${profile.site}${path}"`));
+    assert.ok(html.includes(`property="og:image" content="${profile.site}${profile.portrait}"`));
+    assert.ok(!html.includes('https://wchwawa.github.io'));
     for (const code of ['en', 'zh-CN', 'x-default']) assert.ok(html.includes(`hreflang="${code}"`));
     const json = html.match(/<script[^>]+type="application\/ld\+json"[^>]*>(.*?)<\/script>/s)?.[1];
     assert.ok(json);
     const person = JSON.parse(json);
     assert.equal(person['@type'], 'Person');
     assert.equal(person.name, profile.fullName);
+    assert.equal(person.url, profile.site);
+    assert.equal(person.image, `${profile.site}${profile.portrait}`);
     assert.deepEqual(person.sameAs, [profile.github, profile.linkedin, profile.x]);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.ok(html.includes(`mailto:${profile.email}`));
