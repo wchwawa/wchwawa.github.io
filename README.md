@@ -2,8 +2,8 @@
 
 A bilingual personal website for Jason (Changhao) Wang, built with Astro and plain CSS.
 
-- English: https://wchwawa.github.io/
-- Chinese: https://wchwawa.github.io/zh/
+- English: https://jasonchwang.com/
+- Chinese: https://jasonchwang.com/zh/
 - Hosting: GitHub Pages, with no application server, tracking or contact form.
 
 ## Develop
@@ -25,7 +25,7 @@ npm run audit:performance
 
 `verify` checks types, generates the static site, checks shared content and metadata, and runs browser tests. Browser coverage includes both languages at 360, 390, 768 and 1440 CSS pixels, both themes, keyboard interaction, disabled JavaScript, blocked local storage, PDF download, local assets, WCAG accessibility checks and 200% zoom-equivalent reflow.
 
-The mobile Lighthouse audit targets performance of at least 95 and accessibility of 100 on each language route. Automated scores complement, but do not replace, a visual review. Local screenshots and reports go into the ignored `qa/` directory. Use `AUDIT_URL=https://wchwawa.github.io npm run audit:performance` to audit the deployed site.
+The mobile Lighthouse audit targets performance of at least 95 and accessibility of 100 on each language route. Automated scores complement, but do not replace, a visual review. Local screenshots and reports go into the ignored `qa/` directory. Use `AUDIT_URL=https://jasonchwang.com npm run audit:performance` to audit the deployed site.
 
 ## Maintain content
 
@@ -55,7 +55,17 @@ The WeChat icon opens a native modal dialog with the owner's original, unmodifie
 
 ## Deployment
 
-The public repository is `wchwawa/wchwawa.github.io`. In repository Settings → Pages, the source is **GitHub Actions**. The `main` branch is published to the root user site, so no Astro `base` prefix or custom domain is needed.
+The public repository is `wchwawa/wchwawa.github.io`. In repository Settings → Pages, the source is **GitHub Actions** and the custom domain is `jasonchwang.com`. The site is published at the domain root, so no Astro `base` prefix is needed. Keep `astro.config.mjs` and `profile.site` aligned so canonical URLs, language alternates, social metadata, structured data and the sitemap use the same origin.
+
+Cloudflare manages DNS only; GitHub Pages serves the site and provisions its HTTPS certificate. The apex uses GitHub Pages' four IPv4 and four IPv6 addresses, while `www` is a CNAME to `wchwawa.github.io`. These records are **DNS only**, with Cloudflare proxying disabled. GitHub Pages redirects `www.jasonchwang.com` and the original `wchwawa.github.io` address to the apex domain. Enforce HTTPS in Pages settings once the certificate is ready.
+
+| DNS name | Type | Values |
+| --- | --- | --- |
+| `@` | A | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
+| `@` | AAAA | `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153` |
+| `www` | CNAME | `wchwawa.github.io` |
+
+The custom-domain binding is maintained in GitHub Pages settings. A repository `CNAME` file is not used by this custom Actions deployment. Never commit Cloudflare API tokens or other deployment credentials.
 
 Pull requests run checks only. Pushes to `main` run the same checks, then upload `dist/` and deploy to Pages. A manual workflow run deploys only when run on `main`. Official actions are pinned to commit SHAs; the deploy job alone receives Pages and OIDC write permissions.
 

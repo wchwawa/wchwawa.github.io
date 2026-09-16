@@ -4,7 +4,7 @@ type Localized<T> = Record<Locale, T>;
 export const profile = {
   name: 'Jason Wang',
   fullName: 'Changhao Wang',
-  site: 'https://wchwawa.github.io',
+  site: 'https://jasonchwang.com',
   email: 'wch19961116@gmail.com',
   github: 'https://github.com/wchwawa',
   linkedin: 'https://www.linkedin.com/in/changhaow/',
