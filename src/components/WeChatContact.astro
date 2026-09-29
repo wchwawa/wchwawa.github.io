@@ -3,12 +3,13 @@ import wechatIcon from '@tabler/icons/outline/brand-wechat.svg?raw';
 import closeIcon from '@tabler/icons/outline/x.svg?raw';
 import { copy, profile, type Locale } from '../data/profile';
 
-interface Props { locale: Locale; }
-const { locale } = Astro.props;
+interface Props { locale: Locale; label?: string; }
+const { locale, label } = Astro.props;
 const t = copy[locale];
 ---
-<a class="contact-icon" href={profile.wechatQr} aria-label={t.wechatContact} title={t.wechatContact} data-wechat-open>
+<a class={label ? 'profile-contact' : 'contact-icon'} href={profile.wechatQr} aria-label={t.wechatContact} title={t.wechatContact} data-wechat-open>
   <span aria-hidden="true" set:html={wechatIcon} />
+  {label && <span>{label}</span>}
 </a>
 
 <dialog id="wechat-dialog" class="wechat-dialog" aria-labelledby="wechat-title">
