@@ -18,34 +18,52 @@ async function checkReflow(page: Page) {
 }
 
 async function checkContactAlignment(page: Page) {
+  const viewport = page.viewportSize()!;
+  const compact = viewport.width <= 900 || viewport.height <= 620;
   const contacts = await page.locator('.profile-contact').evaluateAll(links => links.map(link => {
     const bounds = link.getBoundingClientRect();
     const icon = link.querySelector('svg')!.getBoundingClientRect();
     const label = link.lastElementChild!;
+    const text = label.getBoundingClientRect();
     return {
       name: link.textContent!.trim(),
       bounds: { x: bounds.x, y: bounds.y, right: bounds.right, width: bounds.width, height: bounds.height },
       icon: { x: icon.x, y: icon.y, width: icon.width, height: icon.height },
       labelDisplay: getComputedStyle(label).display,
+      text: { x: text.x, right: text.right, centerY: text.y + text.height / 2, clipped: label.scrollWidth > label.clientWidth + 1 },
     };
   }));
   for (const contact of contacts) {
     expect(contact.icon.width, `${contact.name}: icon must not shrink`).toBe(20);
     expect(contact.icon.height, `${contact.name}: consistent icon height`).toBe(20);
-    expect(contact.icon.x + contact.icon.width / 2, `${contact.name}: icon is horizontally centered`).toBeCloseTo(contact.bounds.x + contact.bounds.width / 2, 0);
     expect(contact.icon.y + contact.icon.height / 2, `${contact.name}: icon is vertically centered`).toBeCloseTo(contact.bounds.y + contact.bounds.height / 2, 0);
-    expect(contact.labelDisplay, `${contact.name}: no visible label competes with the icon row`).toBe('none');
+    if (compact) {
+      expect(contact.icon.x + contact.icon.width / 2, `${contact.name}: icon is horizontally centered`).toBeCloseTo(contact.bounds.x + contact.bounds.width / 2, 0);
+      expect(contact.labelDisplay, `${contact.name}: compact views remain icon-only`).toBe('none');
+    } else {
+      expect(contact.labelDisplay, `${contact.name}: desktop contact labels are restored`).toBe('block');
+      expect(contact.text.centerY, `${contact.name}: text aligns with its icon`).toBeCloseTo(contact.icon.y + contact.icon.height / 2, 0);
+      expect(contact.text.x - contact.icon.x - contact.icon.width, `${contact.name}: original desktop label gap`).toBe(12);
+      expect(contact.text.clipped, `${contact.name}: desktop labels are not clipped`).toBeFalsy();
+      expect(contact.text.right).toBeLessThanOrEqual(contact.bounds.right);
+    }
     expect(contact.bounds.width).toBeGreaterThanOrEqual(44);
     expect(contact.bounds.height).toBeGreaterThanOrEqual(44);
   }
   for (let index = 1; index < contacts.length; index++) {
-    expect(contacts[index].icon.y, 'All five icons, including email, share one row').toBeCloseTo(contacts[0].icon.y, 0);
-    expect(contacts[index].bounds.x, 'Adjacent contact targets do not overlap').toBeGreaterThanOrEqual(contacts[index - 1].bounds.right);
+    if (compact) {
+      expect(contacts[index].icon.y, 'Compact contact icons still share one row').toBeCloseTo(contacts[0].icon.y, 0);
+      expect(contacts[index].bounds.x, 'Adjacent contact targets do not overlap').toBeGreaterThanOrEqual(contacts[index - 1].bounds.right);
+    } else {
+      expect(contacts[index].icon.x, 'Desktop icons share one column').toBeCloseTo(contacts[0].icon.x, 0);
+      expect(contacts[index].text.x, 'Desktop contact labels share one column').toBeCloseTo(contacts[0].text.x, 0);
+      expect(contacts[index].bounds.y, 'Desktop contacts form separate non-overlapping rows').toBeGreaterThanOrEqual(contacts[index - 1].bounds.y + contacts[index - 1].bounds.height);
+    }
   }
 }
 
 async function checkCompactHeader(page: Page) {
-  await expect(page.locator('.wordmark')).toBeHidden();
+  await expect(page.locator('.wordmark')).toHaveCount(0);
   await expect(page.locator('.primary-nav')).toBeHidden();
   await expect(page.locator('.site-header')).toHaveCSS('display', 'contents');
   const header = (await page.locator('.page-header').boundingBox())!;
@@ -77,6 +95,7 @@ for (const locale of ['en', 'zh'] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator('[data-project]')).toHaveCount(5);
         await expect(page.locator('h1')).toHaveText(profile.name);
+        await expect(page.locator('.wordmark')).toHaveCount(0);
         await expect(page.locator('.profile-role')).toHaveText(cvCopy[locale].role);
         await expect(page.locator('.profile-specialisms')).toHaveText(cvCopy[locale].specialisms);
         await expect(page.locator('main > section').first()).toHaveAttribute('id', 'about');
@@ -123,7 +142,12 @@ for (const locale of ['en', 'zh'] as const) {
           await expect(heading).toHaveCSS('border-bottom-width', '0px');
         }
         if (width <= 900) await checkCompactHeader(page);
-        else await expect(page.locator('.primary-nav')).toBeVisible();
+        else {
+          await expect(page.locator('.primary-nav')).toBeVisible();
+          const headerBounds = (await page.locator('.site-header').boundingBox())!;
+          const navBounds = (await page.locator('.primary-nav').boundingBox())!;
+          expect(navBounds.x + navBounds.width / 2, 'Desktop navigation stays centered without a duplicate name').toBeCloseTo(headerBounds.x + headerBounds.width / 2, 0);
+        }
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
         expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
         expect(errors).toEqual([]);

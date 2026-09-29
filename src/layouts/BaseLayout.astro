@@ -81,7 +81,7 @@ const person = {
     <header class="page-header">
       {!notFound && <ProfileCard locale={locale} />}
       <div class="site-header shell">
-        <a class="wordmark" href={routes[locale]} aria-label={t.home}>{profile.name}<span aria-hidden="true">.</span></a>
+        {notFound && <a class="wordmark" href={routes[locale]} aria-label={t.home}>{profile.name}<span aria-hidden="true">.</span></a>}
         <nav aria-label={t.navigation} class="primary-nav">
           <a href={`${routes[locale]}#about`}>{t.about}</a>
           <a href={`${routes[locale]}#experience`}>{cv.experience}</a>

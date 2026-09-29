@@ -74,13 +74,20 @@ const contacts = [
   .profile-role { margin-top: 12px; color: var(--ink); font-size: 0.875rem; font-weight: 600; line-height: 1.5; }
   .profile-specialisms { margin: 6px auto 0; max-width: 27ch; color: var(--muted); font-size: 0.75rem; line-height: 1.6; }
   .profile-teaching { margin-top: 10px; font-size: 0.75rem; line-height: 1.6; }
-  /* One equal-size target per channel, including email. Accessible names and
-     native desktop hover hints identify the icon-only contact links. */
+  /* Compact views keep one icon-only row. The desktop rail restores the
+     labelled contact list without changing compact geometry. */
   .profile-contacts { display: grid; grid-template-columns: repeat(5, 44px); justify-content: space-between; gap: 0; margin-top: 18px; }
   .profile-contacts :global(.profile-contact) { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 4px; color: var(--link); text-decoration: none; }
   .profile-contacts :global(.profile-contact:hover) { background: var(--surface); }
   .profile-contacts :global(.profile-contact svg) { width: var(--profile-icon-size); height: var(--profile-icon-size); }
   .profile-contacts :global(.contact-label) { display: none; }
+
+  @media (min-width: 901px) and (min-height: 621px) {
+    .profile-contacts { grid-template-columns: minmax(0, 1fr); justify-content: stretch; gap: 2px; text-align: left; }
+    .profile-contacts :global(.profile-contact) { grid-template-columns: var(--profile-icon-size) minmax(0, 1fr); justify-items: stretch; gap: 12px; width: auto; height: auto; min-width: 0; min-height: 44px; padding: 6px 8px; font-family: var(--sans); font-size: 0.8125rem; line-height: 1.5; }
+    .profile-contacts :global(.profile-contact:hover) { text-decoration: underline; }
+    .profile-contacts :global(.contact-label) { display: block; min-width: 0; overflow-wrap: anywhere; }
+  }
 
   @media (min-width: 901px) and (min-height: 621px) and (max-height: 780px) {
     .portrait, .portrait img { width: 116px; height: 116px; }
