@@ -52,6 +52,7 @@ test('sections retain essential content without captions or explanatory subtitle
     const html = readFileSync(file, 'utf8');
     const hero = html.match(/<aside id="hero"[^>]*>(.*?)<\/aside>/s)?.[1];
     assert.ok(hero);
+    assert.ok(!html.includes('class="wordmark"'), 'Profile pages do not repeat the name in the navigation');
     assert.ok(!/data-cv-link|download=|Download CV|下载英文 CV/.test(html));
     assert.ok(!hero.includes('class="biography"'));
     assert.ok(!/<figcaption|project-focus|project-number|project-note|article-destination|contact-description/.test(html));
