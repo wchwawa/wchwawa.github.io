@@ -18,41 +18,49 @@ async function checkReflow(page: Page) {
 }
 
 async function checkContactAlignment(page: Page) {
-  const viewport = page.viewportSize()!;
-  const compact = viewport.width <= 900 || viewport.height <= 620;
   const contacts = await page.locator('.profile-contact').evaluateAll(links => links.map(link => {
     const bounds = link.getBoundingClientRect();
     const icon = link.querySelector('svg')!.getBoundingClientRect();
     const label = link.lastElementChild!;
-    const text = label.getBoundingClientRect();
     return {
       name: link.textContent!.trim(),
-      bounds: { x: bounds.x, right: bounds.right, width: bounds.width, height: bounds.height },
-      icon: { x: icon.x, y: icon.y, right: icon.right, width: icon.width, height: icon.height },
-      text: { x: text.x, right: text.right, centerY: text.y + text.height / 2, clipped: label.scrollWidth > label.clientWidth + 1 },
+      bounds: { x: bounds.x, y: bounds.y, right: bounds.right, width: bounds.width, height: bounds.height },
+      icon: { x: icon.x, y: icon.y, width: icon.width, height: icon.height },
+      labelDisplay: getComputedStyle(label).display,
     };
   }));
   for (const contact of contacts) {
-    expect(contact.icon.width, `${contact.name}: icon must not shrink`).toBe(compact ? 18 : 20);
-    expect(contact.icon.height, `${contact.name}: consistent icon height`).toBe(compact ? 18 : 20);
-    expect(contact.text.centerY, `${contact.name}: icon and label share a vertical center`).toBeCloseTo(contact.icon.y + contact.icon.height / 2, 0);
-    expect(contact.text.x - contact.icon.right, `${contact.name}: consistent icon-to-label gap`).toBe(compact ? 5 : 12);
-    expect(contact.text.clipped, `${contact.name}: visible label is not clipped`).toBeFalsy();
-    expect(contact.text.right).toBeLessThanOrEqual(contact.bounds.right);
+    expect(contact.icon.width, `${contact.name}: icon must not shrink`).toBe(20);
+    expect(contact.icon.height, `${contact.name}: consistent icon height`).toBe(20);
+    expect(contact.icon.x + contact.icon.width / 2, `${contact.name}: icon is horizontally centered`).toBeCloseTo(contact.bounds.x + contact.bounds.width / 2, 0);
+    expect(contact.icon.y + contact.icon.height / 2, `${contact.name}: icon is vertically centered`).toBeCloseTo(contact.bounds.y + contact.bounds.height / 2, 0);
+    expect(contact.labelDisplay, `${contact.name}: no visible label competes with the icon row`).toBe('none');
     expect(contact.bounds.width).toBeGreaterThanOrEqual(44);
     expect(contact.bounds.height).toBeGreaterThanOrEqual(44);
   }
-  const [email, github, ...otherSocials] = contacts;
-  expect(email.icon.x, 'Email and first social icon share their left edge').toBeCloseTo(github.icon.x, 0);
-  expect(email.text.x, 'Email and first social label share their left edge').toBeCloseTo(github.text.x, 0);
-  for (const contact of otherSocials) {
-    if (compact) expect(contact.icon.y, 'Social icons share one row').toBeCloseTo(github.icon.y, 0);
-    else expect(contact.icon.x, 'Desktop icons share one column').toBeCloseTo(email.icon.x, 0);
+  for (let index = 1; index < contacts.length; index++) {
+    expect(contacts[index].icon.y, 'All five icons, including email, share one row').toBeCloseTo(contacts[0].icon.y, 0);
+    expect(contacts[index].bounds.x, 'Adjacent contact targets do not overlap').toBeGreaterThanOrEqual(contacts[index - 1].bounds.right);
   }
-  if (compact) {
-    for (let index = 2; index < contacts.length; index++) {
-      expect(contacts[index].bounds.x, 'Adjacent contact targets do not overlap').toBeGreaterThanOrEqual(contacts[index - 1].bounds.right);
-    }
+}
+
+async function checkCompactHeader(page: Page) {
+  await expect(page.locator('.wordmark')).toBeHidden();
+  await expect(page.locator('.primary-nav')).toBeHidden();
+  await expect(page.locator('.site-header')).toHaveCSS('display', 'contents');
+  const header = (await page.locator('.page-header').boundingBox())!;
+  const card = (await page.locator('[data-profile-card]').boundingBox())!;
+  expect(header.height, 'No empty navigation row remains below the profile').toBe(card.height);
+  expect(header.height, 'Compact header leaves room for reading').toBeLessThanOrEqual(128);
+  await expect(page.locator('body')).toHaveCSS('padding-top', `${header.height}px`);
+  for (const selector of ['[data-language-switch]', '[data-theme-toggle]']) {
+    await expect(page.locator(selector)).toBeInViewport({ ratio: 1 });
+  }
+  const tools = (await page.locator('.header-tools').boundingBox())!;
+  for (const element of await page.locator('.profile-identity .portrait, .profile-titles, .profile-contact').all()) {
+    const bounds = (await element.boundingBox())!;
+    const overlaps = bounds.x < tools.x + tools.width && bounds.x + bounds.width > tools.x && bounds.y < tools.y + tools.height && bounds.y + bounds.height > tools.y;
+    expect(overlaps, 'Utility controls do not overlap identity or contact targets').toBeFalsy();
   }
 }
 
@@ -110,6 +118,12 @@ for (const locale of ['en', 'zh'] as const) {
           expect(bounds!.height).toBeGreaterThanOrEqual(44);
         }
         await checkReflow(page);
+        await checkContactAlignment(page);
+        for (const heading of await page.locator('.section-heading').all()) {
+          await expect(heading).toHaveCSS('border-bottom-width', '0px');
+        }
+        if (width <= 900) await checkCompactHeader(page);
+        else await expect(page.locator('.primary-nav')).toBeVisible();
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
         expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
         expect(errors).toEqual([]);
@@ -120,7 +134,8 @@ for (const locale of ['en', 'zh'] as const) {
           if (width === 390 || width === 1440) {
             await page.locator('#experience').screenshot({ path: `qa/${locale}-${width}-${theme}-experience.png` });
             await page.locator('#contact').screenshot({ path: `qa/${locale}-${width}-${theme}-contact.png` });
-            await page.locator('.primary-nav a[href$="#experience"]').click();
+            if (width > 900) await page.locator('.primary-nav a[href$="#experience"]').click();
+            else await page.locator('#experience').evaluate(el => el.scrollIntoView({ block: 'start' }));
             await page.screenshot({ path: `qa/${locale}-${width}-${theme}-experience-viewport.png` });
           }
         }
@@ -146,10 +161,14 @@ for (const locale of ['en', 'zh'] as const) {
     await expect(details.locator('.experience-outcome')).toBeVisible();
     await details.locator('summary').click();
     await expect(details).not.toHaveAttribute('open');
-    await page.locator('.primary-nav a[href$="#about"]').click();
+    await expect(page.locator('.primary-nav')).toBeHidden();
+    await page.goto(`http://127.0.0.1:4327${route}#about`);
     await expect(page).toHaveURL(/#about$/);
-    await page.locator('.primary-nav a[href$="#experience"]').click();
+    await page.goto(`http://127.0.0.1:4327${route}#experience`);
     await expect(page).toHaveURL(/#experience$/);
+    const heading = (await page.locator('#experience h2').boundingBox())!;
+    const header = (await page.locator('.page-header').boundingBox())!;
+    expect(heading.y).toBeGreaterThanOrEqual(header.y + header.height);
     await page.locator('[data-language-switch]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', locale === 'en' ? 'zh-CN' : 'en');
     await page.locator('[data-wechat-open]').click();
@@ -177,7 +196,9 @@ for (const locale of ['en', 'zh'] as const) {
       await expect(page.locator('header')).toHaveCount(1);
       if (compact) {
         await expect(header).toHaveCSS('position', 'fixed');
-        await expect(page.locator('.wordmark')).toBeHidden();
+        await checkCompactHeader(page);
+      } else {
+        await expect(page.locator('.primary-nav')).toBeVisible();
       }
 
       const checkCard = async () => {
@@ -192,7 +213,7 @@ for (const locale of ['en', 'zh'] as const) {
         if (compact) {
           await expect(page.locator('[data-language-switch]')).toBeInViewport({ ratio: 1 });
           await expect(page.locator('[data-theme-toggle]')).toBeInViewport({ ratio: 1 });
-          for (const link of await page.locator('.primary-nav a').all()) await expect(link).toBeInViewport({ ratio: 1 });
+          await expect(page.locator('.primary-nav')).toBeHidden();
         }
         await checkReflow(page);
       };
@@ -232,18 +253,13 @@ for (const locale of ['en', 'zh'] as const) {
     });
   }
 
-  for (const viewport of [{ width: 320, height: 640 }, { width: 599, height: 700 }, { width: 600, height: 700 }]) {
+  for (const viewport of [{ width: 320, height: 640 }, { width: 599, height: 700 }, { width: 600, height: 700 }, { width: 699, height: 700 }, { width: 700, height: 700 }]) {
     test(`${locale}, ${viewport.width}px: compact contact alignment survives narrow widths and header breakpoints`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       await checkContactAlignment(page);
-      await expect(page.locator('.wordmark')).toBeHidden();
-      await expect(page.locator('[data-language-switch]')).toBeInViewport({ ratio: 1 });
-      await expect(page.locator('[data-theme-toggle]')).toBeInViewport({ ratio: 1 });
-      const titleBounds = (await page.locator('.profile-titles').boundingBox())!;
-      const toolsBounds = (await page.locator('.header-tools').boundingBox())!;
-      if (viewport.width < 600) expect(titleBounds.x + titleBounds.width).toBeLessThan(toolsBounds.x);
+      await checkCompactHeader(page);
       await checkReflow(page);
     });
   }
@@ -367,6 +383,11 @@ for (const locale of ['en', 'zh'] as const) {
 
 test('language, keyboard focus, theme persistence and inline experience', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/');
+  await page.locator('.primary-nav a[href$="#experience"]').click();
+  await expect(page).toHaveURL(/#experience$/);
+  await page.locator('.primary-nav a[href$="#about"]').click();
+  await expect(page).toHaveURL(/#about$/);
   await page.goto('/');
   // Default is deliberately light, independent of the operating system.
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'dark');

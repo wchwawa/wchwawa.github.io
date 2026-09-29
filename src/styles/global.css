@@ -78,7 +78,7 @@ main:focus { outline: none; }
 
 .resume-content { min-width: 0; padding-bottom: 12px; }
 .section { position: relative; margin-bottom: 30px; scroll-margin-top: 1.5rem; }
-.section-heading { border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 16px; }
+.section-heading { margin-bottom: 16px; }
 .biography { max-width: 84ch; }
 .biography p + p { margin-top: 12px; }
 .anchor-alias { position: absolute; top: 0; }
@@ -133,7 +133,7 @@ main:focus { outline: none; }
 .writing-entry h3 a { text-decoration: none; }
 .writing-entry h3 a:hover { text-decoration: underline; }
 .external-arrow { display: inline-block; font-family: var(--sans); font-size: 0.65em; margin-left: 0.45em; vertical-align: 0.15em; }
-.site-footer { display: flex; justify-content: flex-end; border-top: 1px solid var(--line); padding-block: 20px 28px; font-family: var(--sans); font-size: 0.75rem; }
+.site-footer { display: flex; justify-content: flex-end; padding-block: 20px 28px; font-family: var(--sans); font-size: 0.75rem; }
 .site-footer a { padding-block: 4px; }
 .not-found { padding-block: 100px 160px; }
 .not-found h1 { font-size: clamp(2.5rem, 6vw, 4rem); margin-top: 20px; }
@@ -166,7 +166,7 @@ main:focus { outline: none; }
   .header-tools { grid-column: 2; grid-row: 1; gap: 12px; }
   .language-link { font-size: 0.8125rem; }
   .section { margin-bottom: 26px; }
-  .section-heading { font-size: 1.65rem; padding-bottom: 7px; margin-bottom: 14px; }
+  .section-heading { font-size: 1.65rem; margin-bottom: 14px; }
   .biography p + p { margin-top: 12px; }
   .timeline-entry { grid-template-columns: minmax(0, 1fr); gap: 3px; padding: 0 0 12px 24px; }
   .timeline-date { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.75rem; padding-top: 0; }

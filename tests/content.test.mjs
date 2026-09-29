@@ -65,7 +65,7 @@ test('sections retain essential content without captions or explanatory subtitle
   }
 });
 
-test('the fixed profile provides direct, visibly labelled contact methods', () => {
+test('the fixed profile provides direct contact icons with accessible names and hover hints', () => {
   for (const { file, lang } of pages) {
     const html = readFileSync(file, 'utf8');
     const contacts = [...html.matchAll(/<a class="profile-contact[^"]*"([^>]*)>(.*?)<\/a>/gs)];

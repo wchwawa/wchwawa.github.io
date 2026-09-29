@@ -7,9 +7,8 @@
   --profile-rail-width: 260px;
   --profile-rail-gap: 52px;
   --profile-top: 96px;
-  --profile-compact-height: calc(160px + env(safe-area-inset-top));
-  --profile-navigation-height: 48px;
-  --profile-header-height: calc(var(--profile-compact-height) + var(--profile-navigation-height));
+  --profile-identity-height: 48px;
+  --profile-header-height: calc(112px + env(safe-area-inset-top));
   --profile-tools-reserve: 104px;
 }
 .shell { width: min(var(--page-max-width), calc(100% - 2 * var(--page-gutter))); margin-inline: auto; }
@@ -24,20 +23,22 @@
 @media (max-width: 900px), (max-height: 620px) {
   .profile-page { padding-top: var(--profile-header-height); }
   .profile-page .page-header { position: fixed; inset: 0 0 auto; height: var(--profile-header-height); z-index: 10; background: var(--bg); }
-  .profile-page .site-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 0; height: var(--profile-navigation-height); padding-top: 0; }
-  .profile-page .wordmark { display: none; }
-  .profile-page .primary-nav { justify-content: space-between; gap: 16px; width: 100%; padding: 0; font-size: 0.75rem; }
-  .profile-page .primary-nav a { display: flex; align-items: center; min-height: 44px; padding-block: 0; }
-  .profile-page .header-tools { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: var(--page-gutter); width: 96px; gap: 8px; }
+  /* No compact navigation strip, border or reserved row. Only the utility
+     controls remain, positioned inside the same fixed identity header. */
+  .profile-page .site-header { display: contents; }
+  .profile-page .wordmark, .profile-page .primary-nav { display: none; }
+  .profile-page .header-tools { position: absolute; z-index: 1; top: calc(10px + env(safe-area-inset-top)); right: var(--page-gutter); width: 96px; gap: 8px; }
   .profile-page .language-link { display: flex; align-items: center; justify-content: center; flex: 0 0 44px; min-height: 44px; padding: 0; font-size: 0.75rem; }
-  .profile-page .theme-toggle { flex: 0 0 44px; }
+  .profile-page .theme-toggle { flex: 0 0 44px; border: 0; }
   .resume-layout { padding-top: 22px; padding-inline-start: 0; }
   html:has(.profile-page) { scroll-padding-top: calc(var(--profile-header-height) + 12px); }
 }
-@media (min-width: 600px) and (max-width: 900px), (min-width: 600px) and (max-height: 620px) {
-  :root { --profile-compact-height: calc(112px + env(safe-area-inset-top)); --profile-tools-reserve: 0px; }
-  .profile-page .primary-nav { width: auto; gap: 24px; }
-  .profile-page .header-tools { position: static; }
+@media (min-width: 700px) and (max-width: 900px), (min-width: 700px) and (max-height: 620px) {
+  :root { --profile-header-height: calc(80px + env(safe-area-inset-top)); }
+  .profile-page .header-tools { top: calc(18px + env(safe-area-inset-top)); }
+}
+@media (max-width: 380px) {
+  :root { --profile-identity-height: 64px; --profile-header-height: calc(128px + env(safe-area-inset-top)); }
 }
 @media print {
   .profile-page { padding-top: 0; }
