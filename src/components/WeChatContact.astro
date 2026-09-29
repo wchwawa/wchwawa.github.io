@@ -9,7 +9,7 @@ const t = copy[locale];
 ---
 <a class={label ? 'profile-contact' : 'contact-icon'} href={profile.wechatQr} aria-label={t.wechatContact} title={t.wechatContact} data-wechat-open>
   <span aria-hidden="true" set:html={wechatIcon} />
-  {label && <span>{label}</span>}
+  {label && <span class="contact-label">{label}</span>}
 </a>
 
 <dialog id="wechat-dialog" class="wechat-dialog" aria-labelledby="wechat-title">
