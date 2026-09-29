@@ -2,11 +2,12 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir } from 'node:fs/promises';
 import { biography, copy, profile, projects } from '../../src/data/profile';
+import { cvCopy, experience } from '../../src/data/cv';
 
 async function checkReflow(page: Page) {
   const issues = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
-    return [...document.querySelectorAll<HTMLElement>('main *, header *, footer *')]
+    return [...document.querySelectorAll<HTMLElement>('main *, aside *, header *, footer *')]
       .filter(el => {
         const rect = el.getBoundingClientRect();
         return rect.width > 0 && (rect.right > width + 1 || rect.left < -1);
@@ -14,6 +15,45 @@ async function checkReflow(page: Page) {
       .map(el => `${el.tagName}.${el.className}`);
   });
   expect(issues, 'Elements outside the reading viewport').toEqual([]);
+}
+
+async function checkContactAlignment(page: Page) {
+  const viewport = page.viewportSize()!;
+  const compact = viewport.width <= 900 || viewport.height <= 620;
+  const contacts = await page.locator('.profile-contact').evaluateAll(links => links.map(link => {
+    const bounds = link.getBoundingClientRect();
+    const icon = link.querySelector('svg')!.getBoundingClientRect();
+    const label = link.lastElementChild!;
+    const text = label.getBoundingClientRect();
+    return {
+      name: link.textContent!.trim(),
+      bounds: { x: bounds.x, right: bounds.right, width: bounds.width, height: bounds.height },
+      icon: { x: icon.x, y: icon.y, right: icon.right, width: icon.width, height: icon.height },
+      text: { x: text.x, right: text.right, centerY: text.y + text.height / 2, clipped: label.scrollWidth > label.clientWidth + 1 },
+    };
+  }));
+  for (const contact of contacts) {
+    expect(contact.icon.width, `${contact.name}: icon must not shrink`).toBe(compact ? 18 : 20);
+    expect(contact.icon.height, `${contact.name}: consistent icon height`).toBe(compact ? 18 : 20);
+    expect(contact.text.centerY, `${contact.name}: icon and label share a vertical center`).toBeCloseTo(contact.icon.y + contact.icon.height / 2, 0);
+    expect(contact.text.x - contact.icon.right, `${contact.name}: consistent icon-to-label gap`).toBe(compact ? 5 : 12);
+    expect(contact.text.clipped, `${contact.name}: visible label is not clipped`).toBeFalsy();
+    expect(contact.text.right).toBeLessThanOrEqual(contact.bounds.right);
+    expect(contact.bounds.width).toBeGreaterThanOrEqual(44);
+    expect(contact.bounds.height).toBeGreaterThanOrEqual(44);
+  }
+  const [email, github, ...otherSocials] = contacts;
+  expect(email.icon.x, 'Email and first social icon share their left edge').toBeCloseTo(github.icon.x, 0);
+  expect(email.text.x, 'Email and first social label share their left edge').toBeCloseTo(github.text.x, 0);
+  for (const contact of otherSocials) {
+    if (compact) expect(contact.icon.y, 'Social icons share one row').toBeCloseTo(github.icon.y, 0);
+    else expect(contact.icon.x, 'Desktop icons share one column').toBeCloseTo(email.icon.x, 0);
+  }
+  if (compact) {
+    for (let index = 2; index < contacts.length; index++) {
+      expect(contacts[index].bounds.x, 'Adjacent contact targets do not overlap').toBeGreaterThanOrEqual(contacts[index - 1].bounds.right);
+    }
+  }
 }
 
 for (const locale of ['en', 'zh'] as const) {
@@ -29,20 +69,41 @@ for (const locale of ['en', 'zh'] as const) {
         await page.evaluate(() => document.fonts.ready);
         await expect(page.locator('[data-project]')).toHaveCount(5);
         await expect(page.locator('h1')).toHaveText(profile.name);
-        await expect(page.locator('.hero-role')).toHaveText(copy[locale].role);
-        await expect(page.locator('main > section').first()).toHaveAttribute('id', 'hero');
-        await expect(page.locator('#hero + section')).toHaveAttribute('id', 'about');
-        await expect(page.locator('#hero [data-cv-link]')).toBeInViewport();
+        await expect(page.locator('.profile-role')).toHaveText(cvCopy[locale].role);
+        await expect(page.locator('.profile-specialisms')).toHaveText(cvCopy[locale].specialisms);
+        await expect(page.locator('main > section').first()).toHaveAttribute('id', 'about');
+        await expect(page.locator('[data-cv-link], a[download]')).toHaveCount(0);
+        await expect(page.locator('[data-experience]')).toHaveCount(experience.length);
+        await expect(page.locator('[data-experience="holt"], [data-experience="unihack"], [data-experience="mlflow"]')).toHaveCount(0);
+        await expect(page.locator('.experience-details[open]')).toHaveCount(0);
+        await expect(page.locator('[data-experience] h3')).toHaveText(experience.map(entry => entry.copy[locale].name));
+        for (const preview of await page.locator('.experience-summary').all()) {
+          await expect(preview).toHaveCSS('white-space', 'nowrap');
+          await expect(preview).toHaveCSS('text-overflow', 'ellipsis');
+          const oneLine = await preview.evaluate(el => el.getBoundingClientRect().height <= parseFloat(getComputedStyle(el).lineHeight) + 1);
+          expect(oneLine, 'Collapsed descriptions show exactly one line').toBeTruthy();
+        }
+        const timelineBounds = await page.locator('#experience').boundingBox();
+        expect(timelineBounds!.height, 'All six entries remain compact').toBeLessThan(width < 700 ? 800 : 700);
+        const genesis = page.locator('[data-experience="echojournal"]');
+        await expect(genesis.locator('h3')).toHaveText(locale === 'en' ? 'Genesis Accelerator' : 'Genesis 创业孵化器');
+        await expect(genesis.locator('.experience-role')).toHaveText(locale === 'en' ? 'Cohort 36' : '第 36 期');
+        for (const icon of await page.locator('.experience-toggle').all()) {
+          await expect(icon).toHaveText('');
+          await expect(icon).toHaveAttribute('aria-hidden', 'true');
+          await expect(icon.locator('svg')).toBeVisible();
+        }
+        await expect(page.locator('#contact')).toBeInViewport();
         await expect(page.locator('#about h2')).toHaveText(locale === 'en' ? 'About me' : '关于我');
         await expect(page.locator('.portrait figcaption')).toHaveCount(0);
         await expect(page.locator('#contact p, .writing-entry p, .project-focus, .project-note')).toHaveCount(0);
         await expect(page.locator('.biography > p')).toHaveText(biography[locale].map(paragraph => paragraph.map(segment => segment.text).join('')));
-        const icons = page.locator('.contact-icon');
+        const icons = page.locator('.profile-contact');
         await expect(icons).toHaveCount(5);
+        await expect(icons).toHaveText([profile.email, 'GitHub', 'LinkedIn', 'X', copy[locale].wechatTitle]);
         await expect(page.locator('#contact a[aria-label$="X"]')).toHaveAttribute('href', profile.x);
         for (const icon of await icons.all()) {
           await expect(icon).toHaveAccessibleName(/.+/);
-          await expect(icon).toHaveText('');
           await expect(icon.locator('svg')).toBeVisible();
           const bounds = await icon.boundingBox();
           expect(bounds!.width).toBeGreaterThanOrEqual(44);
@@ -57,8 +118,10 @@ for (const locale of ['en', 'zh'] as const) {
           await page.screenshot({ path: `qa/${locale}-${width}-${theme}-top.png` });
           await page.screenshot({ path: `qa/${locale}-${width}-${theme}-full.png`, fullPage: true });
           if (width === 390 || width === 1440) {
-            await page.locator('#work').screenshot({ path: `qa/${locale}-${width}-${theme}-work.png` });
+            await page.locator('#experience').screenshot({ path: `qa/${locale}-${width}-${theme}-experience.png` });
             await page.locator('#contact').screenshot({ path: `qa/${locale}-${width}-${theme}-contact.png` });
+            await page.locator('.primary-nav a[href$="#experience"]').click();
+            await page.screenshot({ path: `qa/${locale}-${width}-${theme}-experience-viewport.png` });
           }
         }
       });
@@ -71,19 +134,165 @@ for (const locale of ['en', 'zh'] as const) {
     await page.goto(`http://127.0.0.1:4327${route}`);
     await expect(page.locator('[data-project]')).toHaveCount(5);
     await expect(page.locator('[data-theme-toggle]')).toBeHidden();
-    await expect(page.locator('[data-cv-link]')).toHaveAttribute('href', profile.cv);
+    await expect(page.locator('[data-cv-link]')).toHaveCount(0);
+    await expect(page.locator('[data-experience]')).toHaveCount(experience.length);
     await expect(page.locator('.biography > p')).toHaveCount(6);
     await expect(page.locator('.biography a')).toHaveCount(9);
+    const details = page.locator('[data-experience="nokv"] details');
+    await expect(details).not.toHaveAttribute('open');
+    await details.locator('summary').click();
+    await expect(details).toHaveAttribute('open');
+    await expect(details.locator('.experience-summary')).toHaveCSS('white-space', 'normal');
+    await expect(details.locator('.experience-outcome')).toBeVisible();
+    await details.locator('summary').click();
+    await expect(details).not.toHaveAttribute('open');
     await page.locator('.primary-nav a[href$="#about"]').click();
     await expect(page).toHaveURL(/#about$/);
-    await page.locator('.primary-nav a[href$="#work"]').click();
-    await expect(page).toHaveURL(/#work$/);
+    await page.locator('.primary-nav a[href$="#experience"]').click();
+    await expect(page).toHaveURL(/#experience$/);
     await page.locator('[data-language-switch]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', locale === 'en' ? 'zh-CN' : 'en');
     await page.locator('[data-wechat-open]').click();
     await expect(page).toHaveURL(`http://127.0.0.1:4327${profile.wechatQr}`);
     await context.close();
   });
+
+  for (const viewport of [
+    { width: 360, height: 640 }, { width: 390, height: 844 },
+    { width: 768, height: 1024 }, { width: 844, height: 390 },
+    { width: 900, height: 621 }, { width: 901, height: 621 },
+    { width: 1024, height: 768 }, { width: 1440, height: 900 },
+    { width: 1280, height: 500 },
+  ]) {
+    test(`${locale}, ${viewport.width}x${viewport.height}: profile remains fixed and independent of content layout`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(route);
+      await page.evaluate(() => document.fonts.ready);
+      const card = page.locator('[data-profile-card]');
+      const compact = viewport.width <= 900 || viewport.height <= 620;
+      await expect(card).toHaveCSS('position', compact ? 'static' : 'fixed');
+      expect(await card.evaluate(el => el.parentElement?.tagName)).toBe('HEADER');
+      const original = (await card.boundingBox())!;
+      const header = page.locator('.page-header');
+      await expect(page.locator('header')).toHaveCount(1);
+      if (compact) {
+        await expect(header).toHaveCSS('position', 'fixed');
+        await expect(page.locator('.wordmark')).toBeHidden();
+      }
+
+      const checkCard = async () => {
+        const current = (await card.boundingBox())!;
+        for (const axis of ['x', 'y', 'width', 'height'] as const) {
+          expect(current[axis], `Profile ${axis} is independent of content scroll and sizing`).toBeCloseTo(original[axis], 0);
+        }
+        expect(current.y).toBeGreaterThanOrEqual(0);
+        expect(current.y + current.height).toBeLessThanOrEqual(viewport.height);
+        await expect(card.locator('.portrait img')).toBeInViewport({ ratio: 1 });
+        for (const link of await card.locator('.profile-contact').all()) await expect(link).toBeInViewport({ ratio: 1 });
+        if (compact) {
+          await expect(page.locator('[data-language-switch]')).toBeInViewport({ ratio: 1 });
+          await expect(page.locator('[data-theme-toggle]')).toBeInViewport({ ratio: 1 });
+          for (const link of await page.locator('.primary-nav a').all()) await expect(link).toBeInViewport({ ratio: 1 });
+        }
+        await checkReflow(page);
+      };
+
+      for (const id of ['about', 'experience', 'education', 'skills', 'speaking', 'writing']) {
+        await page.evaluate(section => document.getElementById(section)!.scrollIntoView({ block: 'start' }), id);
+        await checkCard();
+        const heading = (await page.locator(`#${id} > h2`).boundingBox())!;
+        if (compact) {
+          const headerBounds = (await header.boundingBox())!;
+          expect(heading.y).toBeGreaterThanOrEqual(headerBounds.y + headerBounds.height);
+        }
+        else expect(heading.x).toBeGreaterThanOrEqual(original.x + original.width);
+      }
+
+      await page.locator('[data-experience="nokv"] summary').click();
+      await expect(page.locator('[data-experience="nokv"] details')).toHaveAttribute('open');
+      await checkCard();
+      // Stress the content region only: the fixed identity must not move or resize.
+      await page.locator('main').evaluate(el => {
+        el.style.paddingBlock = '120px';
+        el.style.maxWidth = '90%';
+        el.style.minHeight = '4000px';
+        el.style.fontSize = '20px';
+      });
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await checkCard();
+      await page.locator('main').evaluate(el => el.removeAttribute('style'));
+      await page.locator('[data-experience="nokv"] summary').click();
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await checkCard();
+      await checkContactAlignment(page);
+      if (!process.env.CI) {
+        await mkdir('qa', { recursive: true });
+        await page.screenshot({ path: `qa/${locale}-${viewport.width}x${viewport.height}-fixed-profile-bottom.png` });
+      }
+    });
+  }
+
+  for (const viewport of [{ width: 320, height: 640 }, { width: 599, height: 700 }, { width: 600, height: 700 }]) {
+    test(`${locale}, ${viewport.width}px: compact contact alignment survives narrow widths and header breakpoints`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(route);
+      await page.evaluate(() => document.fonts.ready);
+      await checkContactAlignment(page);
+      await expect(page.locator('.wordmark')).toBeHidden();
+      await expect(page.locator('[data-language-switch]')).toBeInViewport({ ratio: 1 });
+      await expect(page.locator('[data-theme-toggle]')).toBeInViewport({ ratio: 1 });
+      const titleBounds = (await page.locator('.profile-titles').boundingBox())!;
+      const toolsBounds = (await page.locator('.header-tools').boundingBox())!;
+      if (viewport.width < 600) expect(titleBounds.x + titleBounds.width).toBeLessThan(toolsBounds.x);
+      await checkReflow(page);
+    });
+  }
+
+  for (const width of [390, 1440]) {
+    test(`${locale}, ${width}px: compact experience expands fully with pointer and keyboard`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(route);
+      const nokv = page.locator('[data-experience="nokv"]');
+      const details = nokv.locator('details');
+      const trigger = details.locator('summary');
+      const chevron = trigger.locator('.experience-toggle svg');
+      await expect(trigger).toHaveAccessibleName(`NoKV: ${cvCopy[locale].details}`);
+      await expect(chevron).toHaveCSS('transform', 'none');
+      const collapsedHeight = (await nokv.boundingBox())!.height;
+      await trigger.focus();
+      await expect(trigger).toHaveCSS('outline-style', 'solid');
+      await trigger.press('Enter');
+      await expect(details).toHaveAttribute('open');
+      await expect(chevron).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+      await expect(details.locator('.experience-outcome')).toBeVisible();
+      await expect(nokv.locator('.experience-role')).toHaveCSS('white-space', 'normal');
+      expect((await nokv.boundingBox())!.height).toBeGreaterThan(collapsedHeight);
+      await checkReflow(page);
+      await trigger.press('Space');
+      await expect(details).not.toHaveAttribute('open');
+      await expect(chevron).toHaveCSS('transform', 'none');
+      await expect(details.locator('.experience-outcome')).toBeHidden();
+      await expect(trigger).toBeFocused();
+      expect((await nokv.boundingBox())!.height).toBeCloseTo(collapsedHeight, 0);
+
+      for (const entry of experience) {
+        const item = page.locator(`[data-experience="${entry.id}"]`);
+        const disclosure = item.locator('details');
+        await disclosure.locator('.experience-toggle').click();
+        await expect(disclosure).toHaveAttribute('open');
+        await expect(disclosure.locator('.experience-summary')).toHaveText(entry.copy[locale].summary);
+        await expect(disclosure.locator('.experience-summary')).toHaveCSS('white-space', 'normal');
+        if (entry.copy[locale].outcome) await expect(disclosure.locator('.experience-outcome')).toBeVisible();
+      }
+      await checkReflow(page);
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+      expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+      if (!process.env.CI) {
+        await mkdir('qa', { recursive: true });
+        await page.locator('#experience').screenshot({ path: `qa/${locale}-${width}-expanded-experience.png` });
+      }
+    });
+  }
 
   for (const viewport of [{ width: 360, height: 640 }, { width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 1000 }]) {
     test(`${locale}, ${viewport.width}px: WeChat dialog fits and supports keyboard dismissal`, async ({ page }) => {
@@ -148,15 +357,15 @@ for (const locale of ['en', 'zh'] as const) {
     const page = await context.newPage();
     await page.goto(`http://127.0.0.1:4327${route}`);
     await checkReflow(page);
-    await expect(page.locator('[data-cv-link]')).toBeVisible();
-    await expect(page.locator('[data-cv-link]')).toBeInViewport();
+    await expect(page.locator('[data-cv-link]')).toHaveCount(0);
+    await expect(page.locator('[data-experience]')).toHaveCount(experience.length);
     await expect(page.locator('[data-project]')).toHaveCount(5);
     if (!process.env.CI) await page.screenshot({ path: `qa/${locale}-zoom-200.png`, fullPage: true });
     await context.close();
   });
 }
 
-test('language, keyboard focus, theme persistence and downloads', async ({ page }) => {
+test('language, keyboard focus, theme persistence and inline experience', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   // Default is deliberately light, independent of the operating system.
@@ -180,15 +389,12 @@ test('language, keyboard focus, theme persistence and downloads', async ({ page 
   await page.reload();
   await expect(page.locator('[data-theme-toggle]')).toHaveAttribute('aria-pressed', 'false');
 
-  const downloadPromise = page.waitForEvent('download');
-  await page.locator('[data-cv-link]').click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('Jason_Wang_CV.pdf');
-  expect(await download.failure()).toBeNull();
+  await expect(page.locator('[data-cv-link], a[download]')).toHaveCount(0);
+  await expect(page.locator('[data-experience]')).toHaveCount(experience.length);
   await expect(page.locator(`a[href="mailto:${profile.email}"]`)).toBeVisible();
-  await page.locator('.contact-icon').first().focus();
+  await page.locator('.profile-contact').first().focus();
   await page.keyboard.press('Shift+Tab');
-  for (const icon of await page.locator('.contact-icon').all()) {
+  for (const icon of await page.locator('.profile-contact').all()) {
     await page.keyboard.press('Tab');
     await expect(icon).toBeFocused();
     await expect(icon).toHaveCSS('outline-style', 'solid');

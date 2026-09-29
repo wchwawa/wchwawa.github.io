@@ -1,0 +1,129 @@
+---
+import mailIcon from '@tabler/icons/outline/mail.svg?raw';
+import githubIcon from '@tabler/icons/outline/brand-github.svg?raw';
+import linkedinIcon from '@tabler/icons/outline/brand-linkedin.svg?raw';
+import xIcon from '@tabler/icons/outline/brand-x.svg?raw';
+import WeChatContact from './WeChatContact.astro';
+import { copy, profile, type Locale } from '../data/profile';
+import { cvCopy } from '../data/cv';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const t = copy[locale];
+const cv = cvCopy[locale];
+const contacts = [
+  { href: `mailto:${profile.email}`, label: profile.email, accessibleLabel: `${t.emailContact}: ${profile.email}`, icon: mailIcon, email: true },
+  { href: profile.github, label: 'GitHub', accessibleLabel: t.githubContact, icon: githubIcon },
+  { href: profile.linkedin, label: 'LinkedIn', accessibleLabel: t.linkedinContact, icon: linkedinIcon },
+  { href: profile.x, label: 'X', accessibleLabel: t.xContact, icon: xIcon },
+];
+---
+<!-- Fixed to the viewport on desktop, contained by the fixed header on mobile.
+     Never positioned against the content column. -->
+<aside id="hero" class="profile-card" aria-labelledby="name" data-profile-card>
+  <div class="profile-identity">
+    <figure class="portrait">
+      <img src={profile.portrait} alt={t.portraitAlt} width="256" height="256" fetchpriority="high" />
+    </figure>
+    <div class="profile-titles">
+      <h1 id="name">{profile.name}</h1>
+      <p class="profile-role">{cv.role}</p>
+      <p class="profile-specialisms">{cv.specialisms}</p>
+      <p class="profile-teaching">{cv.teaching}</p>
+    </div>
+  </div>
+  <div id="contact" class="profile-contacts" role="group" aria-label={t.contact}>
+    {contacts.map(contact => (
+      <a class:list={['profile-contact', { 'profile-email': contact.email }]} href={contact.href} aria-label={contact.accessibleLabel} title={contact.accessibleLabel}>
+        <span aria-hidden="true" set:html={contact.icon} />
+        <span class="contact-label">{contact.label}</span>
+      </a>
+    ))}
+    <WeChatContact locale={locale} label={t.wechatTitle} />
+  </div>
+</aside>
+
+<style>
+  /* This component owns all profile typography and responsive behaviour.
+     Only the frame's documented geometry tokens cross its boundary. */
+  .profile-card {
+    --profile-icon-size: 20px;
+    position: fixed;
+    inset-block-start: var(--profile-top);
+    inset-inline-start: max(var(--page-gutter), calc((100% - var(--page-max-width)) / 2));
+    width: var(--profile-rail-width);
+    max-height: calc(100dvh - var(--profile-top) - 16px);
+    padding: 6px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    z-index: 10;
+    isolation: isolate;
+    background: var(--bg);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    text-align: center;
+  }
+  .portrait { width: 156px; margin: 0 auto 18px; }
+  .portrait img { width: 156px; height: 156px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg); outline: 1px solid var(--line); }
+  .profile-titles { min-width: 0; }
+  h1 { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 2.15rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.035em; }
+  p { margin: 0; }
+  .profile-role { margin-top: 12px; color: var(--ink); font-size: 0.875rem; font-weight: 600; line-height: 1.5; }
+  .profile-specialisms { margin: 6px auto 0; max-width: 27ch; color: var(--muted); font-size: 0.75rem; line-height: 1.6; }
+  .profile-teaching { margin-top: 10px; font-size: 0.75rem; line-height: 1.6; }
+  .profile-contacts { display: grid; gap: 2px; margin-top: 18px; text-align: left; }
+  .profile-contacts :global(.profile-contact) { display: grid; grid-template-columns: var(--profile-icon-size) minmax(0, 1fr); align-items: center; gap: 12px; min-width: 0; min-height: 44px; padding: 6px 8px; border-radius: 4px; color: var(--link); font-family: var(--sans); font-size: 0.8125rem; line-height: 1.5; text-decoration: none; }
+  .profile-contacts :global(.profile-contact:hover) { background: var(--surface); text-decoration: underline; }
+  .profile-contacts :global(.profile-contact svg) { width: var(--profile-icon-size); height: var(--profile-icon-size); }
+  .contact-label { min-width: 0; overflow-wrap: anywhere; }
+
+  @media (min-width: 901px) and (min-height: 621px) and (max-height: 780px) {
+    .portrait, .portrait img { width: 116px; height: 116px; }
+    .portrait { margin-bottom: 12px; }
+    h1 { font-size: 1.9rem; }
+    .profile-role { margin-top: 8px; }
+    .profile-contacts { margin-top: 12px; gap: 0; }
+  }
+
+  @media (max-width: 900px), (max-height: 620px) {
+    .profile-card {
+      --profile-icon-size: 18px;
+      position: static;
+      width: 100%;
+      height: var(--profile-compact-height);
+      max-height: none;
+      padding: calc(8px + env(safe-area-inset-top)) var(--page-gutter) 8px;
+      overflow-y: auto;
+      text-align: left;
+    }
+    .profile-identity { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 14px; min-height: 48px; padding-inline-end: var(--profile-tools-reserve); }
+    .portrait, .portrait img { width: 48px; height: 48px; }
+    .portrait { margin: 0; }
+    .portrait img { border-width: 2px; }
+    h1 { font-size: 1.375rem; line-height: 1.2; }
+    .profile-role { margin-top: 2px; font-size: 0.75rem; line-height: 1.5; }
+    .profile-specialisms, .profile-teaching { display: none; }
+    /* Content-sized tracks preserve labels and icon widths at narrow sizes.
+       The spanning email shares the first social link's icon and text edges. */
+    .profile-contacts { grid-template-columns: repeat(4, max-content); justify-content: space-between; gap: 0 4px; margin-top: 4px; }
+    .profile-contacts :global(.profile-contact) { gap: 5px; min-width: 44px; min-height: 44px; padding: 4px; font-size: 0.6875rem; white-space: nowrap; }
+    .profile-contacts .profile-email { grid-column: 1 / -1; font-size: 0.75rem; }
+  }
+  @media (min-width: 600px) and (max-width: 900px), (min-width: 600px) and (max-height: 620px) {
+    .profile-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr); align-items: center; column-gap: 24px; }
+    .profile-contacts { margin-top: 0; }
+  }
+  @media (max-width: 380px) {
+    .profile-identity { grid-template-columns: 40px minmax(0, 1fr); gap: 10px; }
+    .portrait, .portrait img { width: 40px; height: 40px; }
+    h1 { font-size: 1.125rem; }
+    .profile-role { font-size: 0.6875rem; }
+  }
+  @media print {
+    .profile-card { position: static; width: 100%; height: auto; max-height: none; overflow: visible; }
+    .profile-specialisms, .profile-teaching { display: block; }
+  }
+</style>

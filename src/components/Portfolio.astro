@@ -1,34 +1,15 @@
 ---
-import mailIcon from '@tabler/icons/outline/mail.svg?raw';
-import githubIcon from '@tabler/icons/outline/brand-github.svg?raw';
-import linkedinIcon from '@tabler/icons/outline/brand-linkedin.svg?raw';
-import xIcon from '@tabler/icons/outline/brand-x.svg?raw';
-import WeChatContact from './WeChatContact.astro';
-import { articles, biography, copy, profile, projects, type Locale } from '../data/profile';
+import chevronDownIcon from '@tabler/icons/outline/chevron-down.svg?raw';
+import { articles, biography, copy, type Locale } from '../data/profile';
+import { cvCopy, education, experience, monthLabel, recognition, skills } from '../data/cv';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const t = copy[locale];
-const contacts = [
-  { href: `mailto:${profile.email}`, label: t.emailContact, icon: mailIcon },
-  { href: profile.github, label: t.githubContact, icon: githubIcon },
-  { href: profile.linkedin, label: t.linkedinContact, icon: linkedinIcon },
-  { href: profile.x, label: t.xContact, icon: xIcon },
-];
+const cv = cvCopy[locale];
+const speaking = recognition.copy[locale];
 ---
-<main id="main" class="shell" tabindex="-1">
-  <section id="hero" class="hero" aria-labelledby="name">
-    <div class="hero-identity">
-      <h1 id="name">{profile.name}</h1>
-      <p class="hero-role">{t.role}</p>
-    </div>
-    <figure class="portrait">
-      <img src={profile.portrait} alt={t.portraitAlt} width="256" height="256" fetchpriority="high" />
-    </figure>
-    <div class="hero-actions">
-      <a class="button button-solid" href="#contact">{t.contactAction}<span aria-hidden="true"> ↗</span></a>
-      <a class="button button-outline" href={profile.cv} download="Jason_Wang_CV.pdf" data-cv-link>{t.cvAction}<span aria-hidden="true"> ↓</span></a>
-    </div>
-  </section>
+<div class="resume-layout shell">
+  <main id="main" class="resume-content" tabindex="-1">
 
   <section id="about" class="section about-section" aria-labelledby="about-title">
     <h2 id="about-title" class="section-heading">{t.about}</h2>
@@ -37,28 +18,59 @@ const contacts = [
     </div>
   </section>
 
-  <section id="work" class="section work-section" aria-labelledby="work-title">
-    <h2 id="work-title" class="section-heading">{t.projects}</h2>
-    <div class="project-list">
-      {projects.map(project => {
-        const p = project.copy[locale];
+  <section id="experience" class="section experience-section" aria-labelledby="experience-title">
+    <span id="work" class="anchor-alias" aria-hidden="true"></span>
+    <h2 id="experience-title" class="section-heading">{cv.experience}</h2>
+    <ol class="timeline" aria-label={cv.timelineLabel}>
+      {experience.map((entry, index) => {
+        const item = entry.copy[locale];
         return (
-          <article class="project" data-project={project.id} aria-labelledby={`project-${project.id}`}>
-            <div class="project-identity">
-              <h3 id={`project-${project.id}`}><a href={project.url}>{project.name}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
-              <p class="project-role">{p.role}</p>
+          <li class:list={['timeline-entry', { 'timeline-latest': index === 0 }]} data-experience={entry.id} data-kind={entry.kind} data-project={entry.projectId}>
+            <span class="timeline-dot" aria-hidden="true"></span>
+            <div class="timeline-date">
+              <time datetime={entry.start}>{monthLabel(entry.start)}</time>
+              {entry.end !== entry.start && <span class="timeline-end">{entry.end ? <>{cv.to}{' '}<time datetime={entry.end}>{monthLabel(entry.end)}</time></> : cv.present}</span>}
             </div>
-            <div class="project-body">
-              <p class="project-description">{p.description}</p>
-              <p class="project-outcome">
-                {p.outcome}
-                {project.recognitionLinks && <>{' '}{project.recognitionLinks.map((link, linkIndex) => <>{linkIndex > 0 && <span aria-hidden="true"> · </span>}<a href={link.url}>{link.name}</a></>)}</>}
-              </p>
-            </div>
-          </article>
+            <article class="timeline-body" aria-labelledby={`experience-${entry.id}`}>
+              <div class="experience-heading">
+                <h3 id={`experience-${entry.id}`}><a href={entry.url}>{item.name}</a></h3>
+                <p class="experience-role">{item.role}</p>
+              </div>
+              <details class="experience-details">
+                <summary aria-label={`${item.name}: ${cv.details}`}>
+                  <span class="experience-summary">{item.summary}</span>
+                  <span class="experience-toggle" aria-hidden="true" set:html={chevronDownIcon} />
+                </summary>
+                {item.outcome && <p class="experience-outcome">{item.outcome}</p>}
+              </details>
+            </article>
+          </li>
         );
       })}
-    </div>
+    </ol>
+  </section>
+
+  <section id="education" class="section education-section" aria-labelledby="education-title">
+    <h2 id="education-title" class="section-heading">{cv.education}</h2>
+    <div class="education-list">{education.map(entry => (
+      <article class="education-entry">
+        <div><h3>{entry.copy[locale].institution}</h3><p>{entry.copy[locale].degree}</p></div>
+        <p class="education-date"><time datetime={entry.start}>{monthLabel(entry.start)}</time>{' - '}<time datetime={entry.end}>{monthLabel(entry.end)}</time></p>
+      </article>
+    ))}</div>
+  </section>
+
+  <section id="skills" class="section skills-section" aria-labelledby="skills-title">
+    <h2 id="skills-title" class="section-heading">{cv.skills}</h2>
+    <dl class="skills-list">{skills[locale].map(skill => <div><dt>{skill.label}</dt><dd>{skill.text}</dd></div>)}</dl>
+  </section>
+
+  <section id="speaking" class="section speaking-section" aria-labelledby="speaking-title">
+    <h2 id="speaking-title" class="section-heading">{cv.recognition}</h2>
+    <article class="speaking-entry">
+      <time datetime={recognition.date}>{monthLabel(recognition.date)}</time>
+      <div><h3>{speaking.title}</h3><p class="experience-role">{speaking.role}</p><p>{speaking.text}</p></div>
+    </article>
   </section>
 
   <section id="writing" class="section writing-section" aria-labelledby="writing-title">
@@ -68,7 +80,7 @@ const contacts = [
         const a = article.copy[locale];
         return (
           <article class="writing-entry">
-            <time datetime={article.published}>{a.date}</time>
+            <time datetime={article.published}>{monthLabel(article.published.slice(0, 7))}</time>
             <h3><a href={article.url}>{a.title}<span class="external-arrow" aria-hidden="true">↗</span></a></h3>
           </article>
         );
@@ -76,15 +88,5 @@ const contacts = [
     </div>
   </section>
 
-  <section id="contact" class="section contact-section" aria-labelledby="contact-title">
-    <h2 id="contact-title" class="section-heading">{t.contact}</h2>
-    <div class="contact-links">
-      {contacts.map(contact => (
-        <a class="contact-icon" href={contact.href} aria-label={contact.label} title={contact.label}>
-          <span aria-hidden="true" set:html={contact.icon} />
-        </a>
-      ))}
-      <WeChatContact locale={locale} />
-    </div>
-  </section>
-</main>
+  </main>
+</div>

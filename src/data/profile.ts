@@ -27,7 +27,7 @@ export const copy = {
     language: '中文版',
     languageCode: 'zh',
     theme: 'Dark theme',
-    role: 'Applied AI Engineer · Agent Systems, AI Infrastructure & DBMS',
+    role: 'Applied AI Engineer · Agent Systems & DBMS',
     contactAction: 'Get in touch',
     cvAction: 'Download CV',
     portraitAlt: 'Jason Wang smiling and giving a thumbs-up',
@@ -58,7 +58,7 @@ export const copy = {
     language: 'English',
     languageCode: 'en',
     theme: '深色主题',
-    role: '应用 AI 工程师 · Agent 系统、AI 基础设施与 DBMS',
+    role: '应用 AI 工程师 · Agent 系统与 DBMS',
     contactAction: '联系我',
     cvAction: '下载英文 CV',
     portraitAlt: 'Jason Wang 微笑着竖起拇指',
@@ -260,12 +260,12 @@ export const projects: Project[] = [
     url: 'https://github.com/huangruiteng/loopx',
     copy: {
       en: {
-        role: 'Collaborator',
+        role: 'Maintainer',
         description: 'Contributed shared-goal state and execution-ownership semantics to a long-task agent harness. The work makes authority explicit: who may act and publish results, and how state stays consistent across retries, reassignment and recovery.',
         outcome: `${facts.loopx.displayStars} GitHub stars (as of ${facts.loopx.checkedOn}).`,
       },
       zh: {
-        role: '协作者',
+        role: '开源维护者',
         description: '为面向长任务的 Agent 执行框架设计和实现共享目标状态与执行权机制，明确谁可以执行任务、谁有权提交结果，以及重试、任务转交和故障恢复时如何保持状态一致。',
         outcome: `${facts.loopx.displayStars} GitHub stars（截至 ${facts.loopx.checkedOn}）。`,
       },
