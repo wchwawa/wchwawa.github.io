@@ -101,6 +101,9 @@ main:focus { outline: none; }
 .timeline-body h3 a:hover { color: var(--link); text-decoration: underline; }
 .experience-role { font-family: var(--sans); font-size: 0.78125rem; line-height: 1.6; color: var(--muted); margin: 2px 0 5px; }
 .experience-heading .experience-role { flex: 1; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Entries without a disclosure must show their complete role at every width. */
+.experience-heading-only { flex-wrap: wrap; }
+.experience-heading-only .experience-role { flex: 0 1 auto; overflow: visible; white-space: normal; }
 .experience-details > summary { display: flex; align-items: flex-start; gap: 12px; min-height: 32px; padding-block: 3px; cursor: pointer; list-style: none; }
 .experience-details > summary::-webkit-details-marker { display: none; }
 .experience-summary { display: block; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9375rem; line-height: 1.6; }

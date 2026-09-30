@@ -135,6 +135,7 @@ test('the same five projects and shared facts are used in both languages', () =>
 
 test('CV experiences share exact dates and reverse chronology in both languages', () => {
   assert.deepEqual(experience.map(({ id, start, end }) => [id, start, end]), [
+    ['lingopal', '2026-10', null],
     ['loopx', '2026-08', null],
     ['nokv', '2026-03', null], ['echojournal', '2025-08', '2025-09'], ['usyd', '2025-06', null],
     ['picseo', '2025-03', '2025-06'], ['neuono', '2025-01', '2025-03'],
@@ -149,8 +150,12 @@ test('CV experiences share exact dates and reverse chronology in both languages'
       const source = experience[index];
       assert.ok(entry[2].includes(`datetime="${source.start}"`));
       if (source.end) assert.ok(entry[2].includes(`datetime="${source.end}"`));
-      else assert.ok(entry[2].includes(cvCopy[locale].present));
+      else assert.ok(entry[2].includes(source.incoming ? cvCopy[locale].incoming : cvCopy[locale].present));
       for (const value of Object.values(source.copy[locale])) assert.ok(entry[2].includes(value.replaceAll('&', '&amp;')));
+      if (!source.copy[locale].summary) {
+        assert.doesNotMatch(entry[2], /<details\b|<summary\b|experience-summary|experience-toggle|experience-outcome/);
+        return;
+      }
       assert.match(entry[2], /<details class="experience-details">/);
       assert.match(entry[2], /<summary\b[^>]*aria-label=/);
       const toggle = entry[2].match(/<span class="experience-toggle"[^>]*>(.*?)<\/span>/s)?.[1];
@@ -163,6 +168,25 @@ test('CV experiences share exact dates and reverse chronology in both languages'
     }
     for (const skill of skills[locale]) assert.ok(html.includes(skill.text));
     assert.ok(html.includes('id="work"')); // Preserve existing incoming links.
+  }
+});
+
+test('Lingopal publishes only the official company, role and incoming timeline metadata', () => {
+  const entry = experience.find(item => item.id === 'lingopal');
+  assert.equal(experience[0], entry);
+  assert.equal(entry.url, 'https://lingopal.ai/');
+  assert.equal(entry.start, '2026-10');
+  assert.equal(entry.incoming, true);
+  assert.equal(entry.kind, 'work');
+  assert.equal(entry.projectId, undefined);
+  for (const { file, lang } of pages) {
+    const locale = lang === 'en' ? 'en' : 'zh';
+    assert.deepEqual(entry.copy[locale], { name: 'Lingopal', role: 'Member of Technical Staff' });
+    const html = readFileSync(file, 'utf8');
+    const item = html.match(/<li\b[^>]*data-experience="lingopal"[^>]*>(.*?)<\/li>/s)?.[1];
+    assert.ok(item);
+    assert.match(item, /href="https:\/\/lingopal\.ai\/"/);
+    assert.equal(item.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(), `2026.10 ${cvCopy[locale].incoming} Lingopal Member of Technical Staff`);
   }
 });
 
