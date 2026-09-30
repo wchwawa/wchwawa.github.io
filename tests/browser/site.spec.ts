@@ -104,6 +104,15 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(page.locator('[data-experience="holt"], [data-experience="unihack"], [data-experience="mlflow"]')).toHaveCount(0);
         await expect(page.locator('.experience-details[open]')).toHaveCount(0);
         await expect(page.locator('[data-experience] h3')).toHaveText(experience.map(entry => entry.copy[locale].name));
+        const lingopal = page.locator('[data-experience="lingopal"]');
+        await expect(page.locator('[data-experience]').first()).toHaveAttribute('data-experience', 'lingopal');
+        await expect(lingopal.locator('h3 a')).toHaveText('Lingopal');
+        await expect(lingopal.locator('h3 a')).toHaveAttribute('href', 'https://lingopal.ai/');
+        await expect(lingopal.locator('.experience-role')).toHaveText('Member of Technical Staff');
+        await expect(lingopal.locator('.experience-role')).toHaveCSS('white-space', 'normal');
+        await expect(lingopal.locator('.timeline-end')).toHaveText(cvCopy[locale].incoming);
+        await expect(lingopal.locator('details, summary, .experience-summary, .experience-toggle, .experience-outcome')).toHaveCount(0);
+        await expect(lingopal.locator('p')).toHaveCount(1);
         for (const preview of await page.locator('.experience-summary').all()) {
           await expect(preview).toHaveCSS('white-space', 'nowrap');
           await expect(preview).toHaveCSS('text-overflow', 'ellipsis');
@@ -111,7 +120,7 @@ for (const locale of ['en', 'zh'] as const) {
           expect(oneLine, 'Collapsed descriptions show exactly one line').toBeTruthy();
         }
         const timelineBounds = await page.locator('#experience').boundingBox();
-        expect(timelineBounds!.height, 'All six entries remain compact').toBeLessThan(width < 700 ? 800 : 700);
+        expect(timelineBounds!.height, 'All timeline entries remain compact').toBeLessThan(width < 700 ? 800 : 700);
         const genesis = page.locator('[data-experience="echojournal"]');
         await expect(genesis.locator('h3')).toHaveText(locale === 'en' ? 'Genesis Accelerator' : 'Genesis 创业孵化器');
         await expect(genesis.locator('.experience-role')).toHaveText(locale === 'en' ? 'Cohort 36' : '第 36 期');
@@ -318,6 +327,11 @@ for (const locale of ['en', 'zh'] as const) {
       for (const entry of experience) {
         const item = page.locator(`[data-experience="${entry.id}"]`);
         const disclosure = item.locator('details');
+        if (!entry.copy[locale].summary) {
+          await expect(disclosure).toHaveCount(0);
+          await expect(item.locator('.experience-role')).toHaveText(entry.copy[locale].role);
+          continue;
+        }
         await disclosure.locator('.experience-toggle').click();
         await expect(disclosure).toHaveAttribute('open');
         await expect(disclosure.locator('.experience-summary')).toHaveText(entry.copy[locale].summary);

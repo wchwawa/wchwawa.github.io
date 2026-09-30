@@ -29,20 +29,20 @@ const speaking = recognition.copy[locale];
             <span class="timeline-dot" aria-hidden="true"></span>
             <div class="timeline-date">
               <time datetime={entry.start}>{monthLabel(entry.start)}</time>
-              {entry.end !== entry.start && <span class="timeline-end">{entry.end ? <>{cv.to}{' '}<time datetime={entry.end}>{monthLabel(entry.end)}</time></> : cv.present}</span>}
+              {entry.end !== entry.start && <span class="timeline-end">{entry.end ? <>{cv.to}{' '}<time datetime={entry.end}>{monthLabel(entry.end)}</time></> : entry.incoming ? cv.incoming : cv.present}</span>}
             </div>
             <article class="timeline-body" aria-labelledby={`experience-${entry.id}`}>
-              <div class="experience-heading">
+              <div class:list={['experience-heading', { 'experience-heading-only': !item.summary }]}>
                 <h3 id={`experience-${entry.id}`}><a href={entry.url}>{item.name}</a></h3>
                 <p class="experience-role">{item.role}</p>
               </div>
-              <details class="experience-details">
+              {item.summary && <details class="experience-details">
                 <summary aria-label={`${item.name}: ${cv.details}`}>
                   <span class="experience-summary">{item.summary}</span>
                   <span class="experience-toggle" aria-hidden="true" set:html={chevronDownIcon} />
                 </summary>
                 {item.outcome && <p class="experience-outcome">{item.outcome}</p>}
-              </details>
+              </details>}
             </article>
           </li>
         );

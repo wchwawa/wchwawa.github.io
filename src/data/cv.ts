@@ -1,11 +1,12 @@
 import { facts, projects, type Locale } from './profile.ts';
 
 type Localized<T> = Record<Locale, T>;
-type ExperienceCopy = { name: string; role: string; summary: string; outcome?: string };
+type ExperienceCopy = { name: string; role: string; summary?: string; outcome?: string };
 type Experience = {
   id: string;
   start: string;
   end: string | null;
+  incoming?: boolean;
   kind: 'open-source' | 'work' | 'personal';
   url: string;
   projectId?: string;
@@ -18,10 +19,19 @@ const project = (id: string) => {
   return value;
 };
 
-// Dates and roles transcribed from Jason_WANG_CV.pdf, reviewed 2026-09-20.
-// Null end dates mean ongoing; identical start/end months mean single-month work.
+// Dates and roles maintained from owner-provided records, reviewed 2026-09-30.
+// Null end dates mean ongoing unless explicitly marked incoming.
+// Identical start/end months mean single-month work.
 // Equal start dates retain CV order. Do not infer dates from repository activity.
 export const experience: Experience[] = ([
+  {
+    id: 'lingopal', start: '2026-10', end: null, incoming: true, kind: 'work',
+    url: 'https://lingopal.ai/',
+    copy: {
+      en: { name: 'Lingopal', role: 'Member of Technical Staff' },
+      zh: { name: 'Lingopal', role: 'Member of Technical Staff' },
+    },
+  },
   {
     id: 'loopx', start: '2026-08', end: null, kind: 'open-source',
     projectId: 'loopx', url: project('loopx').url,
@@ -105,8 +115,8 @@ export const recognition = {
 };
 
 export const cvCopy = {
-  en: { experience: 'Experience', education: 'Education', skills: 'Skills', recognition: 'Speaking', present: 'Present', to: 'to', details: 'Experience details', role: 'Applied AI Engineer', specialisms: 'Agent Systems & DBMS', teaching: 'Tutor, University of Sydney', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
-  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', recognition: '演讲', present: '至今', to: '至', details: '经历详情', role: '应用 AI 工程师', specialisms: 'Agent 系统与 DBMS', teaching: '悉尼大学课程导师', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
+  en: { experience: 'Experience', education: 'Education', skills: 'Skills', recognition: 'Speaking', present: 'Present', incoming: 'Incoming', to: 'to', details: 'Experience details', role: 'Applied AI Engineer', specialisms: 'Agent Systems & DBMS', teaching: 'Tutor, University of Sydney', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
+  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', recognition: '演讲', present: '至今', incoming: '即将入职', to: '至', details: '经历详情', role: '应用 AI 工程师', specialisms: 'Agent 系统与 DBMS', teaching: '悉尼大学课程导师', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
 };
 
 export const monthLabel = (month: string) => month.replace('-', '.');
