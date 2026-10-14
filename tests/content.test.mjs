@@ -39,7 +39,7 @@ test('the complete linked biography is preserved beside the profile on each page
     assert.ok(!/hero-summary|about-story|class="teaching"|class="principle"|cv-note|Five projects, from infrastructure to applications\.|五个项目，从底层系统到实际应用。|English · PDF|英文 · PDF|Built for reading\. Hosted on GitHub Pages\.|为阅读而设计 · 托管于 GitHub Pages/.test(html));
   }
   const englishText = biography.en.map(paragraph => paragraph.map(segment => segment.text).join(''));
-  assert.ok(englishText[0].startsWith('Hi, I’m Jason Wang, a Sydney-based applied AI engineer'));
+  assert.ok(englishText[0].startsWith('Hi, I’m Jason Wang, a Sydney-based software engineer'));
   assert.ok(englishText[1].includes('5.8K+ GitHub stars') && englishText[1].includes('37K+ stars') && englishText[1].includes('245K+ stars'));
   assert.ok(englishText[2].includes('At THDR Group, I implemented the core agent workflow'));
   assert.ok(englishText[3].includes('Genesis Accelerator, Cohort 36, in late 2025.'));
@@ -171,12 +171,12 @@ test('CV experiences share exact dates and reverse chronology in both languages'
   }
 });
 
-test('Lingopal publishes only the official company, role and incoming timeline metadata', () => {
+test('Lingopal publishes only the official company, role and ongoing timeline metadata', () => {
   const entry = experience.find(item => item.id === 'lingopal');
   assert.equal(experience[0], entry);
   assert.equal(entry.url, 'https://lingopal.ai/');
   assert.equal(entry.start, '2026-10');
-  assert.equal(entry.incoming, true);
+  assert.ok(!entry.incoming);
   assert.equal(entry.kind, 'work');
   assert.equal(entry.projectId, undefined);
   for (const { file, lang } of pages) {
@@ -186,7 +186,7 @@ test('Lingopal publishes only the official company, role and incoming timeline m
     const item = html.match(/<li\b[^>]*data-experience="lingopal"[^>]*>(.*?)<\/li>/s)?.[1];
     assert.ok(item);
     assert.match(item, /href="https:\/\/lingopal\.ai\/"/);
-    assert.equal(item.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(), `2026.10 ${cvCopy[locale].incoming} Lingopal Member of Technical Staff`);
+    assert.equal(item.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(), `2026.10 ${cvCopy[locale].present} Lingopal Member of Technical Staff`);
   }
 });
 
@@ -216,6 +216,36 @@ test('the accelerator experience leads with Genesis and its cohort, with EchoJou
   }
 });
 
+test('Software Engineer is used site-wide without the former profile teaching subtitle', () => {
+  assert.equal(cvCopy.en.role, 'Software Engineer');
+  assert.equal(cvCopy.zh.role, '软件工程师');
+  for (const { file, lang } of pages) {
+    const locale = lang === 'en' ? 'en' : 'zh';
+    const html = readFileSync(file, 'utf8');
+    assert.doesNotMatch(html, /applied ai engineer|应用\s*AI\s*工程师/i);
+    assert.doesNotMatch(html, /profile-teaching|Tutor, University of Sydney/);
+    assert.ok(html.includes(`<title>Jason Wang | ${cvCopy[locale].role}</title>`));
+    assert.ok(html.includes(`property="og:title" content="Jason Wang | ${cvCopy[locale].role}"`));
+    assert.match(html, /data-experience="usyd"/);
+    assert.ok(biography[locale][0].some(segment => segment.text.includes(locale === 'en' ? 'I also tutor' : '课程导师')));
+  }
+  assert.doesNotMatch(readFileSync('dist/404.html', 'utf8'), /applied ai engineer|应用\s*AI\s*工程师/i);
+});
+
+test('EchoJournal highlights the early independent ChatGPT Dot concept in biography and project copy', () => {
+  const project = projects.find(item => item.id === 'echojournal');
+  const timeline = experience.find(item => item.id === 'echojournal');
+  for (const { file, lang } of pages) {
+    const locale = lang === 'en' ? 'en' : 'zh';
+    const comparison = locale === 'en' ? /very early, independent prototype of the ChatGPT Dot concept/ : /ChatGPT Dot 这一理念非常早期的独立原型探索/;
+    assert.match(biography[locale][3].map(segment => segment.text).join(''), comparison);
+    assert.match(project.copy[locale].description, comparison);
+    assert.match(timeline.copy[locale].summary, comparison);
+    const html = readFileSync(file, 'utf8');
+    assert.equal((html.match(/ChatGPT Dot/g) ?? []).length, 2);
+  }
+});
+
 test('each page has its own metadata, alternates and a Person identity', () => {
   assert.equal(profile.site, 'https://jasonchwang.com');
   assert.equal(astroConfig.site, profile.site);
@@ -234,6 +264,7 @@ test('each page has its own metadata, alternates and a Person identity', () => {
     assert.equal(person.name, profile.fullName);
     assert.equal(person.url, profile.site);
     assert.equal(person.image, `${profile.site}${profile.portrait}`);
+    assert.equal(person.jobTitle, 'Software Engineer');
     assert.deepEqual(person.sameAs, [profile.github, profile.linkedin, profile.x]);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.ok(html.includes(`mailto:${profile.email}`));

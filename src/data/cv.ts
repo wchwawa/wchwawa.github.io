@@ -19,13 +19,13 @@ const project = (id: string) => {
   return value;
 };
 
-// Dates and roles maintained from owner-provided records, reviewed 2026-09-30.
+// Dates and roles maintained from owner-provided records, reviewed 2026-10-14.
 // Null end dates mean ongoing unless explicitly marked incoming.
 // Identical start/end months mean single-month work.
 // Equal start dates retain CV order. Do not infer dates from repository activity.
 export const experience: Experience[] = ([
   {
-    id: 'lingopal', start: '2026-10', end: null, incoming: true, kind: 'work',
+    id: 'lingopal', start: '2026-10', end: null, kind: 'work',
     url: 'https://lingopal.ai/',
     copy: {
       en: { name: 'Lingopal', role: 'Member of Technical Staff' },
@@ -52,8 +52,8 @@ export const experience: Experience[] = ([
     id: 'echojournal', start: '2025-08', end: '2025-09', kind: 'personal',
     projectId: 'echojournal', url: project('echojournal').url,
     copy: {
-      en: { name: 'Genesis Accelerator', role: `Cohort ${facts.echoJournalCohort}`, summary: 'Built EchoJournal, a voice-native personal memory system with searchable transcripts, daily-to-monthly reflections and a WebRTC voice agent. Conversations retrieve personal history through explicit user- and date-scoped queries.', outcome: project('echojournal').copy.en.outcome },
-      zh: { name: 'Genesis 创业孵化器', role: `第 ${facts.echoJournalCohort} 期`, summary: '构建 EchoJournal 语音原生个人记忆系统，将语音整理为可检索文本及日、周、月回顾；通过 WebRTC 实时语音 Agent，按用户与时间范围检索个人历史，让对话基于真实记录。', outcome: project('echojournal').copy.zh.outcome },
+      en: { name: 'Genesis Accelerator', role: `Cohort ${facts.echoJournalCohort}`, summary: 'Built EchoJournal as a very early, independent prototype of the ChatGPT Dot concept: a voice-native personal memory system with searchable transcripts, daily-to-monthly reflections and a WebRTC voice agent. Conversations retrieve personal history through explicit user- and date-scoped queries.', outcome: project('echojournal').copy.en.outcome },
+      zh: { name: 'Genesis 创业孵化器', role: `第 ${facts.echoJournalCohort} 期`, summary: '构建 EchoJournal，本质上是对 ChatGPT Dot 这一理念非常早期的独立原型探索。这个语音原生个人记忆系统将语音整理为可检索文本及日、周、月回顾；通过 WebRTC 实时语音 Agent，按用户与时间范围检索个人历史，让对话基于真实记录。', outcome: project('echojournal').copy.zh.outcome },
     },
   },
   {
@@ -115,8 +115,8 @@ export const recognition = {
 };
 
 export const cvCopy = {
-  en: { experience: 'Experience', education: 'Education', skills: 'Skills', recognition: 'Speaking', present: 'Present', incoming: 'Incoming', to: 'to', details: 'Experience details', role: 'Applied AI Engineer', specialisms: 'Agent Systems & DBMS', teaching: 'Tutor, University of Sydney', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
-  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', recognition: '演讲', present: '至今', incoming: '即将入职', to: '至', details: '经历详情', role: '应用 AI 工程师', specialisms: 'Agent 系统与 DBMS', teaching: '悉尼大学课程导师', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
+  en: { experience: 'Experience', education: 'Education', skills: 'Skills', recognition: 'Speaking', present: 'Present', incoming: 'Incoming', to: 'to', details: 'Experience details', role: 'Software Engineer', specialisms: 'Agent Systems & DBMS', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
+  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', recognition: '演讲', present: '至今', incoming: '即将入职', to: '至', details: '经历详情', role: '软件工程师', specialisms: 'Agent 系统与 DBMS', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
 };
 
 export const monthLabel = (month: string) => month.replace('-', '.');

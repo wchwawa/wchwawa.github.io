@@ -19,15 +19,15 @@ export const routes: Record<Locale, string> = { en: '/', zh: '/zh/' };
 
 export const copy = {
   en: {
-    title: 'Jason Wang | Applied AI engineer',
-    description: 'Jason (Changhao) Wang is a Sydney-based applied AI engineer, NoKV lead maintainer and tutor at the University of Sydney’s School of Computer Science.',
+    title: 'Jason Wang | Software Engineer',
+    description: 'Jason (Changhao) Wang is a Sydney-based software engineer, NoKV lead maintainer and tutor at the University of Sydney’s School of Computer Science.',
     skip: 'Skip to content',
     navigation: 'Main navigation',
     home: 'Jason Wang, home',
     language: '中文版',
     languageCode: 'zh',
     theme: 'Dark theme',
-    role: 'Applied AI Engineer · Agent Systems & DBMS',
+    role: 'Software Engineer · Agent Systems & DBMS',
     contactAction: 'Get in touch',
     cvAction: 'Download CV',
     portraitAlt: 'Jason Wang smiling and giving a thumbs-up',
@@ -50,15 +50,15 @@ export const copy = {
     backHome: 'Back to the homepage',
   },
   zh: {
-    title: 'Jason Wang | 应用 AI 工程师',
-    description: 'Jason（Changhao）Wang，常驻悉尼的应用 AI 工程师、NoKV 主要维护者，同时在悉尼大学计算机科学学院担任课程导师。',
+    title: 'Jason Wang | 软件工程师',
+    description: 'Jason（Changhao）Wang，常驻悉尼的软件工程师、NoKV 主要维护者，同时在悉尼大学计算机科学学院担任课程导师。',
     skip: '跳转到正文',
     navigation: '主导航',
     home: 'Jason Wang，首页',
     language: 'English',
     languageCode: 'en',
     theme: '深色主题',
-    role: '应用 AI 工程师 · Agent 系统与 DBMS',
+    role: '软件工程师 · Agent 系统与 DBMS',
     contactAction: '联系我',
     cvAction: '下载英文 CV',
     portraitAlt: 'Jason Wang 微笑着竖起拇指',
@@ -100,7 +100,7 @@ type BiographySegment = { text: string; href?: string };
 export const biography: Localized<BiographySegment[][]> = {
   en: [
     [
-      { text: 'Hi, I’m Jason Wang, a Sydney-based applied AI engineer focused on agent systems and infrastructure. I also tutor at the University of Sydney’s School of Computer Science.' },
+      { text: 'Hi, I’m Jason Wang, a Sydney-based software engineer focused on agent systems and infrastructure. I also tutor at the University of Sydney’s School of Computer Science.' },
     ],
     [
       { text: 'I’m the lead maintainer of NoKV, an open-source infrastructure project providing persistent workspaces and state management for AI agents. NoKV is part of the Linux Foundation ecosystem, listed in both the ' },
@@ -127,7 +127,7 @@ export const biography: Localized<BiographySegment[][]> = {
       { text: '.' },
     ],
     [
-      { text: 'My capstone project, EchoJournal, is a voice-native personal memory system powered by a real-time voice model. It was selected for the University of Sydney’s Genesis Accelerator, Cohort 36, in late 2025.' },
+      { text: 'My capstone project, EchoJournal, is essentially a very early, independent prototype of the ChatGPT Dot concept: a voice-native personal memory system powered by a real-time voice model. It was selected for the University of Sydney’s Genesis Accelerator, Cohort 36, in late 2025.' },
     ],
     [
       { text: 'I value the combination of product development and infrastructure engineering in practical AI applications, particularly in industries beyond tech. I’m especially interested in working closely with domain experts to understand their workflows and turn their needs into useful, reliable agent systems.' },
@@ -138,7 +138,7 @@ export const biography: Localized<BiographySegment[][]> = {
   ],
   zh: [
     [
-      { text: '你好，我是 Jason Wang，一名常驻悉尼的应用 AI 工程师，专注于 Agent 系统与基础设施。我也在悉尼大学计算机科学学院担任课程导师（Tutor）。' },
+      { text: '你好，我是 Jason Wang，一名常驻悉尼的软件工程师，专注于 Agent 系统与基础设施。我也在悉尼大学计算机科学学院担任课程导师（Tutor）。' },
     ],
     [
       { text: '我是 NoKV 的主要维护者。NoKV 是一个开源基础设施项目，为 AI Agent 提供持久化工作区与状态管理。NoKV 属于 Linux 基金会生态，已被 ' },
@@ -165,7 +165,7 @@ export const biography: Localized<BiographySegment[][]> = {
       { text: '。' },
     ],
     [
-      { text: '我的毕业项目 EchoJournal 是一个以实时语音模型驱动的语音原生个人记忆系统，于 2025 年末入选悉尼大学 Genesis Accelerator 第 36 期。' },
+      { text: '我的毕业项目 EchoJournal，本质上是对 ChatGPT Dot 这一理念非常早期的独立原型探索：以实时语音模型驱动的语音原生个人记忆系统。项目于 2025 年末入选悉尼大学 Genesis Accelerator 第 36 期。' },
     ],
     [
       { text: '我看重产品开发与基础设施工程在实际 AI 应用中的结合，尤其关注科技行业之外的应用场景。我特别希望与领域专家密切合作，理解他们的工作流程，将真实需求转化为有用、可靠的 Agent 系统。' },
@@ -278,12 +278,12 @@ export const projects: Project[] = [
     copy: {
       en: {
         role: 'Personal project',
-        description: 'Built a voice-native personal memory system that turns spoken entries into a searchable journal and structured reflections. Added real-time voice conversations grounded in the user’s own history, with explicit time-range retrieval.',
+        description: 'EchoJournal is essentially a very early, independent prototype of the ChatGPT Dot concept. Built a voice-native personal memory system that turns spoken entries into a searchable journal and structured reflections. Added real-time voice conversations grounded in the user’s own history, with explicit time-range retrieval.',
         outcome: `University of Sydney Genesis Accelerator, cohort ${facts.echoJournalCohort}.`,
       },
       zh: {
         role: '个人项目',
-        description: '将语音记录整理为可检索的日记和结构化回顾，并支持基于个人历史数据的实时语音交流。通过明确的时间范围检索，让对话回到用户真正经历过的事情。',
+        description: 'EchoJournal 本质上是对 ChatGPT Dot 这一理念非常早期的独立原型探索。将语音记录整理为可检索的日记和结构化回顾，并支持基于个人历史数据的实时语音交流。通过明确的时间范围检索，让对话回到用户真正经历过的事情。',
         outcome: `入选悉尼大学 Genesis Accelerator 第 ${facts.echoJournalCohort} 期。`,
       },
     },

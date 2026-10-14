@@ -97,6 +97,8 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(page.locator('h1')).toHaveText(profile.name);
         await expect(page.locator('.wordmark')).toHaveCount(0);
         await expect(page.locator('.profile-role')).toHaveText(cvCopy[locale].role);
+        await expect(page.locator('.profile-teaching')).toHaveCount(0);
+        await expect(page.locator('body')).not.toContainText(/applied ai engineer|应用\s*AI\s*工程师/i);
         await expect(page.locator('.profile-specialisms')).toHaveText(cvCopy[locale].specialisms);
         await expect(page.locator('main > section').first()).toHaveAttribute('id', 'about');
         await expect(page.locator('[data-cv-link], a[download]')).toHaveCount(0);
@@ -110,7 +112,7 @@ for (const locale of ['en', 'zh'] as const) {
         await expect(lingopal.locator('h3 a')).toHaveAttribute('href', 'https://lingopal.ai/');
         await expect(lingopal.locator('.experience-role')).toHaveText('Member of Technical Staff');
         await expect(lingopal.locator('.experience-role')).toHaveCSS('white-space', 'normal');
-        await expect(lingopal.locator('.timeline-end')).toHaveText(cvCopy[locale].incoming);
+        await expect(lingopal.locator('.timeline-end')).toHaveText(cvCopy[locale].present);
         await expect(lingopal.locator('details, summary, .experience-summary, .experience-toggle, .experience-outcome')).toHaveCount(0);
         await expect(lingopal.locator('p')).toHaveCount(1);
         for (const preview of await page.locator('.experience-summary').all()) {
@@ -124,6 +126,8 @@ for (const locale of ['en', 'zh'] as const) {
         const genesis = page.locator('[data-experience="echojournal"]');
         await expect(genesis.locator('h3')).toHaveText(locale === 'en' ? 'Genesis Accelerator' : 'Genesis 创业孵化器');
         await expect(genesis.locator('.experience-role')).toHaveText(locale === 'en' ? 'Cohort 36' : '第 36 期');
+        await expect(genesis.locator('.experience-summary')).toContainText('ChatGPT Dot');
+        await expect(page.locator('.biography > p').nth(3)).toContainText('ChatGPT Dot');
         for (const icon of await page.locator('.experience-toggle').all()) {
           await expect(icon).toHaveText('');
           await expect(icon).toHaveAttribute('aria-hidden', 'true');
