@@ -211,6 +211,9 @@ test('the accelerator experience leads with Genesis and its cohort, with EchoJou
   assert.equal(genesis.copy.en.role, 'Cohort 36');
   assert.equal(genesis.copy.zh.name, 'Genesis 创业孵化器');
   assert.equal(genesis.copy.zh.role, '第 36 期');
+  assert.match(genesis.copy.en.summary, /past journal entries through real-time voice conversations with the agent/);
+  assert.doesNotMatch(genesis.copy.en.summary, /explicit user- and date-scoped queries/);
+  assert.match(genesis.copy.zh.summary, /实时语音对话，与 Agent 一起回顾过往记录、梳理个人经历/);
   for (const locale of ['en', 'zh']) {
     assert.ok(genesis.copy[locale].summary.includes('EchoJournal'));
   }

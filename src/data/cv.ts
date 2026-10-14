@@ -52,8 +52,8 @@ export const experience: Experience[] = ([
     id: 'echojournal', start: '2025-08', end: '2025-09', kind: 'personal',
     projectId: 'echojournal', url: project('echojournal').url,
     copy: {
-      en: { name: 'Genesis Accelerator', role: `Cohort ${facts.echoJournalCohort}`, summary: 'Built EchoJournal as a very early, independent prototype of the ChatGPT Dot concept: a voice-native personal memory system with searchable transcripts, daily-to-monthly reflections and a WebRTC voice agent. Conversations retrieve personal history through explicit user- and date-scoped queries.', outcome: project('echojournal').copy.en.outcome },
-      zh: { name: 'Genesis 创业孵化器', role: `第 ${facts.echoJournalCohort} 期`, summary: '构建 EchoJournal，本质上是对 ChatGPT Dot 这一理念非常早期的独立原型探索。这个语音原生个人记忆系统将语音整理为可检索文本及日、周、月回顾；通过 WebRTC 实时语音 Agent，按用户与时间范围检索个人历史，让对话基于真实记录。', outcome: project('echojournal').copy.zh.outcome },
+      en: { name: 'Genesis Accelerator', role: `Cohort ${facts.echoJournalCohort}`, summary: 'Built EchoJournal as a very early, independent prototype of the ChatGPT Dot concept: a voice-native personal memory system with searchable transcripts, daily-to-monthly reflections and a WebRTC voice agent. Users can revisit and reflect on their past journal entries through real-time voice conversations with the agent.', outcome: project('echojournal').copy.en.outcome },
+      zh: { name: 'Genesis 创业孵化器', role: `第 ${facts.echoJournalCohort} 期`, summary: '构建 EchoJournal，本质上是对 ChatGPT Dot 这一理念非常早期的独立原型探索。这个语音原生个人记忆系统将语音整理为可检索文本及日、周、月回顾；用户可以通过 WebRTC 实时语音对话，与 Agent 一起回顾过往记录、梳理个人经历。', outcome: project('echojournal').copy.zh.outcome },
     },
   },
   {
