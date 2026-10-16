@@ -44,8 +44,8 @@ export const experience: Experience[] = ([
     id: 'nokv', start: '2026-03', end: null, kind: 'open-source',
     projectId: 'nokv', url: project('nokv').url,
     copy: {
-      en: { name: 'NoKV', role: 'Co-founder & Distributed Systems Engineer', summary: 'Lead engineering, downstream use-case discovery and open-source collaboration alongside my day job. Evolved a Go distributed filesystem into a Rust workspace and persistent state layer for agents, and opened AI-for-science pilots alongside atomate2/jobflow.', outcome: 'Listed in the CNCF and LF AI & Data Landscapes. The early Go version is catalogued by CMU DBDB.io.' },
-      zh: { name: 'NoKV', role: '联合创始人、分布式系统工程师', summary: '在主业之外独立推进工程实现、下游需求探索与开源合作，将 Go 分布式文件系统发展为面向 Agent 的 Rust 工作区与持久化状态层，并探索作为 atomate2/jobflow 增量的 AI-for-science 试点。', outcome: '获 CNCF 与 LF AI & Data Landscape 收录；早期 Go 版本收录于 CMU DBDB.io。' },
+      en: { name: 'NoKV', role: 'Co-founder & Lead Maintainer', summary: 'Lead engineering, downstream use-case discovery and open-source collaboration alongside my day job. Evolved a Go distributed filesystem into a Rust workspace and persistent state layer for agents, and opened AI-for-science pilots alongside atomate2/jobflow.', outcome: 'Listed in the CNCF and LF AI & Data Landscapes. The early Go version is catalogued by CMU DBDB.io.' },
+      zh: { name: 'NoKV', role: '联合创始人、主要维护者', summary: '在主业之外独立推进工程实现、下游需求探索与开源合作，将 Go 分布式文件系统发展为面向 Agent 的 Rust 工作区与持久化状态层，并探索作为 atomate2/jobflow 增量的 AI-for-science 试点。', outcome: '获 CNCF 与 LF AI & Data Landscape 收录；早期 Go 版本收录于 CMU DBDB.io。' },
     },
   },
   {

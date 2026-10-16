@@ -214,12 +214,12 @@ export const projects: Project[] = [
     ],
     copy: {
       en: {
-        role: 'Co-founder',
+        role: 'Co-founder & Lead Maintainer',
         description: 'Co-built an agent-native filesystem and versioned state layer so workspaces can outlive their sandboxes. My work spans engineering, downstream use-case discovery and open-source collaboration.',
         outcome: 'Listed in',
       },
       zh: {
-        role: '联合创始人',
+        role: '联合创始人、主要维护者',
         description: '共同构建面向 Agent 的文件系统形态工作区与版本化状态层，让工作区独立于沙箱持久保留。我负责工程实现、下游需求探索与开源合作。',
         outcome: '已收录于',
       },
