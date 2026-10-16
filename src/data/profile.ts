@@ -20,7 +20,7 @@ export const routes: Record<Locale, string> = { en: '/', zh: '/zh/' };
 export const copy = {
   en: {
     title: 'Jason Wang | Software Engineer',
-    description: 'Jason (Changhao) Wang is a Sydney-based software engineer, NoKV lead maintainer and tutor at the University of Sydney’s School of Computer Science.',
+    description: 'Jason (Changhao) Wang is a Sydney-based software engineer, Member of Technical Staff at Lingopal, NoKV lead maintainer and former tutor at the University of Sydney’s School of Computer Science.',
     skip: 'Skip to content',
     navigation: 'Main navigation',
     home: 'Jason Wang, home',
@@ -51,7 +51,7 @@ export const copy = {
   },
   zh: {
     title: 'Jason Wang | 软件工程师',
-    description: 'Jason（Changhao）Wang，常驻悉尼的软件工程师、NoKV 主要维护者，同时在悉尼大学计算机科学学院担任课程导师。',
+    description: 'Jason（Changhao）Wang，常驻悉尼的软件工程师，现任 Lingopal Member of Technical Staff、NoKV 主要维护者，曾在悉尼大学计算机科学学院担任课程导师。',
     skip: '跳转到正文',
     navigation: '主导航',
     home: 'Jason Wang，首页',
@@ -83,6 +83,7 @@ export const copy = {
 } satisfies Localized<Record<string, string | string[]>>;
 
 const biographyLinks = {
+  lingopal: 'https://lingopal.ai/',
   lfai: 'https://landscape.lfai.foundation/?group=projects-and-products&item=data--store-format--nokv',
   cncf: 'https://landscape.cncf.io/?group=projects-and-products&item=runtime--cloud-native-storage--nokv',
   dbdb: 'https://dbdb.io/db/nokv',
@@ -100,7 +101,9 @@ type BiographySegment = { text: string; href?: string };
 export const biography: Localized<BiographySegment[][]> = {
   en: [
     [
-      { text: 'Hi, I’m Jason Wang, a Sydney-based software engineer focused on agent systems and infrastructure. I also tutor at the University of Sydney’s School of Computer Science.' },
+      { text: 'Hi, I’m Jason Wang, a Sydney-based software engineer focused on agent systems and infrastructure. I’m currently a Member of Technical Staff at ' },
+      { text: 'Lingopal', href: biographyLinks.lingopal },
+      { text: '. Previously, I was a tutor at the University of Sydney’s School of Computer Science.' },
     ],
     [
       { text: 'I’m the lead maintainer of NoKV, an open-source infrastructure project providing persistent workspaces and state management for AI agents. NoKV is part of the Linux Foundation ecosystem, listed in both the ' },
@@ -138,7 +141,9 @@ export const biography: Localized<BiographySegment[][]> = {
   ],
   zh: [
     [
-      { text: '你好，我是 Jason Wang，一名常驻悉尼的软件工程师，专注于 Agent 系统与基础设施。我也在悉尼大学计算机科学学院担任课程导师（Tutor）。' },
+      { text: '你好，我是 Jason Wang，一名常驻悉尼的软件工程师，专注于 Agent 系统与基础设施。目前在 ' },
+      { text: 'Lingopal', href: biographyLinks.lingopal },
+      { text: ' 担任 Member of Technical Staff，曾在悉尼大学计算机科学学院担任课程导师（Tutor）。' },
     ],
     [
       { text: '我是 NoKV 的主要维护者。NoKV 是一个开源基础设施项目，为 AI Agent 提供持久化工作区与状态管理。NoKV 属于 Linux 基金会生态，已被 ' },

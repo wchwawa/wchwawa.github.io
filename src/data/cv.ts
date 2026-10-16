@@ -57,11 +57,11 @@ export const experience: Experience[] = ([
     },
   },
   {
-    id: 'usyd', start: '2025-06', end: null, kind: 'work',
+    id: 'usyd', start: '2025-06', end: '2026-10', kind: 'work',
     url: 'https://www.sydney.edu.au/',
     copy: {
-      en: { name: 'The University of Sydney', role: 'Tutor & Teaching Assistant', summary: 'Teach object-oriented programming, software construction and design, testing, and databases across five undergraduate units. Deliver 14 teaching hours each week, helping students reason about debugging and architectural trade-offs.' },
-      zh: { name: '悉尼大学', role: '课程导师、助教', summary: '承担五门本科课程的教学，涵盖面向对象编程、软件构造与设计、软件测试和数据库。每周授课 14 小时，指导学生调试程序、理解工程架构与设计取舍。' },
+      en: { name: 'The University of Sydney', role: 'Tutor & Teaching Assistant', summary: 'Taught object-oriented programming, software construction and design, testing, and databases across five undergraduate units. Delivered 14 teaching hours each week, helping students reason about debugging and architectural trade-offs.' },
+      zh: { name: '悉尼大学', role: '课程导师、助教', summary: '曾承担五门本科课程的教学，涵盖面向对象编程、软件构造与设计、软件测试和数据库，每周授课 14 小时，指导学生调试程序、理解工程架构与设计取舍。' },
     },
   },
   {

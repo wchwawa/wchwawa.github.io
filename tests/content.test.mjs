@@ -12,6 +12,7 @@ const pages = [
 
 test('the complete linked biography is preserved beside the profile on each page', () => {
   const expectedLinks = [
+    'https://lingopal.ai/',
     'https://landscape.lfai.foundation/?group=projects-and-products&item=data--store-format--nokv',
     'https://landscape.cncf.io/?group=projects-and-products&item=runtime--cloud-native-storage--nokv',
     'https://dbdb.io/db/nokv',
@@ -137,7 +138,7 @@ test('CV experiences share exact dates and reverse chronology in both languages'
   assert.deepEqual(experience.map(({ id, start, end }) => [id, start, end]), [
     ['lingopal', '2026-10', null],
     ['loopx', '2026-08', null],
-    ['nokv', '2026-03', null], ['echojournal', '2025-08', '2025-09'], ['usyd', '2025-06', null],
+    ['nokv', '2026-03', null], ['echojournal', '2025-08', '2025-09'], ['usyd', '2025-06', '2026-10'],
     ['picseo', '2025-03', '2025-06'], ['neuono', '2025-01', '2025-03'],
   ]);
   for (const { file, lang } of pages) {
@@ -230,7 +231,7 @@ test('Software Engineer is used site-wide without the former profile teaching su
     assert.ok(html.includes(`<title>Jason Wang | ${cvCopy[locale].role}</title>`));
     assert.ok(html.includes(`property="og:title" content="Jason Wang | ${cvCopy[locale].role}"`));
     assert.match(html, /data-experience="usyd"/);
-    assert.ok(biography[locale][0].some(segment => segment.text.includes(locale === 'en' ? 'I also tutor' : '课程导师')));
+    assert.ok(biography[locale][0].some(segment => segment.text.includes(locale === 'en' ? 'Previously, I was a tutor' : '曾在悉尼大学')));
   }
   assert.doesNotMatch(readFileSync('dist/404.html', 'utf8'), /applied ai engineer|应用\s*AI\s*工程师/i);
 });
