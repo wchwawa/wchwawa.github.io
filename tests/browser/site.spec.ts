@@ -189,7 +189,7 @@ for (const locale of ['en', 'zh'] as const) {
     await expect(page.locator('[data-cv-link]')).toHaveCount(0);
     await expect(page.locator('[data-experience]')).toHaveCount(experience.length);
     await expect(page.locator('.biography > p')).toHaveCount(6);
-    await expect(page.locator('.biography a')).toHaveCount(9);
+    await expect(page.locator('.biography a')).toHaveCount(10);
     const details = page.locator('[data-experience="nokv"] details');
     await expect(details).not.toHaveAttribute('open');
     await details.locator('summary').click();
