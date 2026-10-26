@@ -128,10 +128,9 @@ main:focus { outline: none; }
 .skills-list > div + div { margin-top: 8px; }
 .skills-list dt { font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; color: var(--muted); padding-top: 3px; }
 .skills-list dd { margin: 0; font-size: 0.9375rem; }
-.speaking-entry, .writing-entry { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; }
-.speaking-entry > time, .writing-entry > time { font-family: var(--sans); font-size: 0.8125rem; color: var(--muted); padding-top: 3px; font-variant-numeric: tabular-nums; }
-.speaking-entry h3, .writing-entry h3 { font-size: 1.0625rem; }
-.speaking-entry p:not(.experience-role) { font-size: 0.9375rem; }
+.writing-entry { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; }
+.writing-entry > time { font-family: var(--sans); font-size: 0.8125rem; color: var(--muted); padding-top: 3px; font-variant-numeric: tabular-nums; }
+.writing-entry h3 { font-size: 1.0625rem; }
 .writing-entry + .writing-entry { margin-top: 12px; }
 .writing-entry h3 a { text-decoration: none; }
 .writing-entry h3 a:hover { text-decoration: underline; }
@@ -184,7 +183,7 @@ main:focus { outline: none; }
   .education-date { text-align: left; }
   .skills-list > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .skills-list dd { font-size: 0.9375rem; }
-  .speaking-entry, .writing-entry { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+  .writing-entry { grid-template-columns: minmax(0, 1fr); gap: 7px; }
   .writing-entry h3 { font-size: 1.0625rem; }
   :lang(zh-CN) h2 { font-size: 1.45rem; }
 }

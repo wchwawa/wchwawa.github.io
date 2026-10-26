@@ -1,12 +1,11 @@
 ---
 import chevronDownIcon from '@tabler/icons/outline/chevron-down.svg?raw';
 import { articles, biography, copy, type Locale } from '../data/profile';
-import { cvCopy, education, experience, monthLabel, recognition, skills } from '../data/cv';
+import { cvCopy, education, experience, monthLabel, skills } from '../data/cv';
 interface Props { locale: Locale; }
 const { locale } = Astro.props;
 const t = copy[locale];
 const cv = cvCopy[locale];
-const speaking = recognition.copy[locale];
 ---
 <div class="resume-layout shell">
   <main id="main" class="resume-content" tabindex="-1">
@@ -63,14 +62,6 @@ const speaking = recognition.copy[locale];
   <section id="skills" class="section skills-section" aria-labelledby="skills-title">
     <h2 id="skills-title" class="section-heading">{cv.skills}</h2>
     <dl class="skills-list">{skills[locale].map(skill => <div><dt>{skill.label}</dt><dd>{skill.text}</dd></div>)}</dl>
-  </section>
-
-  <section id="speaking" class="section speaking-section" aria-labelledby="speaking-title">
-    <h2 id="speaking-title" class="section-heading">{cv.recognition}</h2>
-    <article class="speaking-entry">
-      <time datetime={recognition.date}>{monthLabel(recognition.date)}</time>
-      <div><h3>{speaking.title}</h3><p class="experience-role">{speaking.role}</p><p>{speaking.text}</p></div>
-    </article>
   </section>
 
   <section id="writing" class="section writing-section" aria-labelledby="writing-title">

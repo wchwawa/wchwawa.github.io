@@ -36,7 +36,8 @@ test('the complete linked biography is preserved beside the profile on each page
         if (segment.href) assert.ok(intro.includes(`href="${segment.href.replaceAll('&', '&amp;')}"`));
       }
     }
-    assert.deepEqual([...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m => m[1]), ['about', 'experience', 'education', 'skills', 'speaking', 'writing']);
+    assert.deepEqual([...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m => m[1]), ['about', 'experience', 'education', 'skills', 'writing']);
+    assert.doesNotMatch(html, /ONE Summit|Invited speaker|受邀演讲|id="speaking"/i);
     assert.ok(!/hero-summary|about-story|class="teaching"|class="principle"|cv-note|Five projects, from infrastructure to applications\.|五个项目，从底层系统到实际应用。|English · PDF|英文 · PDF|Built for reading\. Hosted on GitHub Pages\.|为阅读而设计 · 托管于 GitHub Pages/.test(html));
   }
   const englishText = biography.en.map(paragraph => paragraph.map(segment => segment.text).join(''));
@@ -58,7 +59,7 @@ test('sections retain essential content without captions or explanatory subtitle
     assert.ok(!hero.includes('class="biography"'));
     assert.ok(!/<figcaption|project-focus|project-number|project-note|article-destination|contact-description/.test(html));
     assert.ok(!/Notes from building NoKV|Let’s build something useful\.|durable checkpoints, ownership fencing and safe recovery/.test(html));
-    for (const section of ['about', 'experience', 'education', 'skills', 'speaking', 'writing']) {
+    for (const section of ['about', 'experience', 'education', 'skills', 'writing']) {
       assert.ok(html.includes(`id="${section}-title" class="section-heading"`));
     }
     const nokv = html.match(/<li[^>]+data-project="nokv"[^>]*>(.*?)<\/li>/s)?.[1];

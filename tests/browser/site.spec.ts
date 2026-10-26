@@ -255,7 +255,7 @@ for (const locale of ['en', 'zh'] as const) {
         await checkReflow(page);
       };
 
-      for (const id of ['about', 'experience', 'education', 'skills', 'speaking', 'writing']) {
+      for (const id of ['about', 'experience', 'education', 'skills', 'writing']) {
         await page.evaluate(section => document.getElementById(section)!.scrollIntoView({ block: 'start' }), id);
         await checkCard();
         const heading = (await page.locator(`#${id} > h2`).boundingBox())!;

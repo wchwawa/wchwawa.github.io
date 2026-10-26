@@ -106,17 +106,9 @@ export const skills: Localized<{ label: string; text: string }[]> = {
   ],
 };
 
-export const recognition = {
-  date: '2026-08',
-  copy: {
-    en: { title: 'Linux Foundation ONE Summit Tokyo 2026', role: 'Invited speaker', text: 'Invited to speak on why agent systems need a persistent state layer outside their sandboxes.' },
-    zh: { title: 'Linux Foundation ONE Summit Tokyo 2026', role: '受邀演讲嘉宾', text: '受邀分享 Agent 系统为什么需要沙箱之外的持久化状态层。' },
-  },
-};
-
 export const cvCopy = {
-  en: { experience: 'Experience', education: 'Education', skills: 'Skills', recognition: 'Speaking', present: 'Present', incoming: 'Incoming', to: 'to', details: 'Experience details', role: 'Software Engineer', specialisms: 'Agent Systems & DBMS', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
-  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', recognition: '演讲', present: '至今', incoming: '即将入职', to: '至', details: '经历详情', role: '软件工程师', specialisms: 'Agent 系统与 DBMS', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
+  en: { experience: 'Experience', education: 'Education', skills: 'Skills', present: 'Present', incoming: 'Incoming', to: 'to', details: 'Experience details', role: 'Software Engineer', specialisms: 'Agent Systems & DBMS', timelineLabel: 'Work, open-source contributions and personal projects, newest first' },
+  zh: { experience: '工作与开源经历', education: '教育背景', skills: '技术能力', present: '至今', incoming: '即将入职', to: '至', details: '经历详情', role: '软件工程师', specialisms: 'Agent 系统与 DBMS', timelineLabel: '按开始时间倒序排列的工作、开源与个人项目经历' },
 };
 
 export const monthLabel = (month: string) => month.replace('-', '.');
